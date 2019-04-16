@@ -1,8 +1,10 @@
+[![Build Status](https://travis-ci.org/AndrewRadev/tagalong.vim.svg?branch=master)](https://travis-ci.org/AndrewRadev/tagalong.vim)
+
 ## Usage
 
 TODO
 
-![Demo](http://i.andrewradev.com/68d47dd05afa9b79cca8370c82d7f87c.gif)
+![Demo](http://i.andrewradev.com/d31c94c2db184db8883726031deff69c.gif)
 
 ## Contributing
 
