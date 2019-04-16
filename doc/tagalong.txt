@@ -1,0 +1,57 @@
+*tagalong.txt*	TODO
+
+==============================================================================
+CONTENTS                                        *tagalong*   *tagalong-contents*
+
+    Installation................................: |tagalong-installation|
+    Usage.......................................: |tagalong-usage|
+    Settings....................................: |tagalong-settings|
+    Internals...................................: |tagalong-internals|
+    Issues......................................: |tagalong-issues|
+
+
+==============================================================================
+INSTALLATION                                            *tagalong-installation*
+
+There are several ways to install the plugin. The recommended one is by using
+Tim Pope's pathogen (http://www.vim.org/scripts/script.php?script_id=2332). In
+that case, you can clone the plugin's git repository like so:
+>
+    git clone https://github.com/AndrewRadev/tagalong.vim ~/.vim/bundle/tagalong
+<
+If your vim configuration is under git version control, you could also set up
+the repository as a submodule, which would allow you to update more easily.
+The command is (provided you're in ~/.vim):
+>
+    git submodule add https://github.com/AndrewRadev/tagalong.vim bundle/tagalong
+<
+
+Another way is to simply copy all the essential directories inside the ~/.vim
+directory: TODO list of directories
+
+
+==============================================================================
+USAGE                                                          *tagalong-usage*
+
+TODO
+
+
+==============================================================================
+SETTINGS                                                    *tagalong-settings*
+
+TODO
+
+
+==============================================================================
+INTERNALS                                                  *tagalong-internals*
+
+TODO
+
+==============================================================================
+ISSUES                                                        *tagalong-issues*
+
+Any issues and suggestions are very welcome on the github bugtracker:
+https://github.com/AndrewRadev/tagalong.vim/issues
+
+
+vim:tw=78:sw=4:ft=help:norl:
