@@ -1,3 +1,6 @@
+let s:opening_regex = '<\zs[^/>[:space:]][^>[:space:]]\+'
+let s:closing_regex = '<\/\zs[^>[:space:]]\+\ze>'
+
 function! tagalong#Init()
   if exists('b:tagalong_initialized')
     return
@@ -29,9 +32,9 @@ function! tagalong#Trigger(motion)
     let motion = 'E'
   endif
 
-  if tagalong#util#SearchUnderCursor('<\zs[^/>[:space:]]\+')
+  if tagalong#util#SearchUnderCursor(s:opening_regex)
     " We are on an opening tag
-    let tag = matchstr(tagalong#util#GetMotion('vi>'), '^[^>[:space:]]\+')
+    let tag = matchstr(tagalong#util#GetMotion('va>'), s:opening_regex)
 
     let opening_position = getpos('.')
     normal %
@@ -49,9 +52,9 @@ function! tagalong#Trigger(motion)
             \ 'closing_position': closing_position,
             \ }
     endif
-  elseif tagalong#util#SearchUnderCursor('<\/\zs\S\+>')
+  elseif tagalong#util#SearchUnderCursor(s:closing_regex)
     " We are on a closing tag
-    let tag = matchstr(expand('<cWORD>'), '</\zs\S\+\ze>')
+    let tag = matchstr(expand('<cWORD>'), s:closing_regex)
 
     let closing_position = getpos('.')
     normal %
@@ -84,19 +87,25 @@ function! tagalong#Apply()
 
   try
     if change.source == 'opening'
-      let new_content = tagalong#util#GetByPosition(change.opening_position, getpos('.'))
-      let new_tag     = matchstr(new_content, '^\s*\zs\S\+')
+      let new_opening = tagalong#util#GetMotion('va>')
+      let new_tag     = matchstr(new_opening, '^<\zs[^>[:space:]]\+')
+      let new_closing = '</'.new_tag.'>'
     elseif change.source == 'closing'
-      let new_content = tagalong#util#GetByPosition(change.closing_position, getpos('.'))
-      let new_tag     = new_content
+      let new_closing = tagalong#util#GetMotion('va>')
+      let new_tag     = matchstr(new_closing, '^<\/\zs[^>[:space:]]\+')
+
+      call setpos('.', change.opening_position)
+      let new_opening = tagalong#util#GetMotion('va>')
+      let new_opening = substitute(new_opening, s:opening_regex, new_tag, '')
     else
       echoerr "Unexpected tag change source: " . change.source
       return
     endif
 
     " Debug change
+    " Debug [new_tag, new_opening, new_closing]
 
-    if new_tag !~ '^[^</>]\+$'
+    if new_tag !~ '^[^<>]\+$'
       " we've had a change that resulted in something weird, like an empty
       " <></>, bail out
       return
@@ -106,11 +115,11 @@ function! tagalong#Apply()
 
     " First the closing, in case the length changes:
     call setpos('.', change.closing_position)
-    call tagalong#util#ReplaceMotion('vi>', '/'.new_tag)
+    call tagalong#util#ReplaceMotion('va>', new_closing)
 
     " Then the opening tag:
     call setpos('.', change.opening_position)
-    call tagalong#util#ReplaceMotion('v' . change.motion, new_content)
+    call tagalong#util#ReplaceMotion('va>', new_opening)
 
     silent! call repeat#set(":call tagalong#Reapply()\<cr>")
   finally
