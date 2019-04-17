@@ -6,6 +6,7 @@ function! tagalong#Init()
 
   nnoremap <buffer> <silent> cw  :call tagalong#Trigger('w')<cr>cw
   nnoremap <buffer> <silent> ce  :call tagalong#Trigger('e')<cr>ce
+  nnoremap <buffer> <silent> cW  :call tagalong#Trigger('W')<cr>cW
   nnoremap <buffer> <silent> cE  :call tagalong#Trigger('E')<cr>cE
   nnoremap <buffer> <silent> ciw :call tagalong#Trigger('iw')<cr>ciw
   nnoremap <buffer> <silent> caw :call tagalong#Trigger('aw')<cr>caw
@@ -21,14 +22,16 @@ function! tagalong#Trigger(motion)
 
   call tagalong#util#PushCursor()
   let motion = a:motion
-  if motion == 'w'
+  if motion ==# 'w'
     " special case implemented by Vim
     let motion = 'e'
+  elseif motion ==# 'W'
+    let motion = 'E'
   endif
 
-  if tagalong#util#SearchUnderCursor('<\zs\k\+')
+  if tagalong#util#SearchUnderCursor('<\zs[^/>[:space:]]\+')
     " We are on an opening tag
-    let tag = expand('<cword>')
+    let tag = matchstr(tagalong#util#GetMotion('vi>'), '^[^>[:space:]]\+')
 
     let opening_position = getpos('.')
     normal %
@@ -46,9 +49,9 @@ function! tagalong#Trigger(motion)
             \ 'closing_position': closing_position,
             \ }
     endif
-  elseif tagalong#util#SearchUnderCursor('</\zs\k\+>')
+  elseif tagalong#util#SearchUnderCursor('<\/\zs\S\+>')
     " We are on a closing tag
-    let tag = expand('<cword>')
+    let tag = matchstr(expand('<cWORD>'), '</\zs\S\+\ze>')
 
     let closing_position = getpos('.')
     normal %
@@ -82,9 +85,9 @@ function! tagalong#Apply()
   try
     if change.source == 'opening'
       let new_content = tagalong#util#GetByPosition(change.opening_position, getpos('.'))
-      let new_tag     = matchstr(new_content, '^\s*\zs\k\+')
+      let new_tag     = matchstr(new_content, '^\s*\zs\S\+')
     elseif change.source == 'closing'
-      let new_content = expand('<cword>')
+      let new_content = tagalong#util#GetByPosition(change.closing_position, getpos('.'))
       let new_tag     = new_content
     else
       echoerr "Unexpected tag change source: " . change.source
@@ -93,7 +96,7 @@ function! tagalong#Apply()
 
     " Debug change
 
-    if new_tag !~ '^\k\+$'
+    if new_tag !~ '^[^</>]\+$'
       " we've had a change that resulted in something weird, like an empty
       " <></>, bail out
       return
@@ -103,7 +106,7 @@ function! tagalong#Apply()
 
     " First the closing, in case the length changes:
     call setpos('.', change.closing_position)
-    call tagalong#util#ReplaceMotion('viw', new_tag)
+    call tagalong#util#ReplaceMotion('vi>', '/'.new_tag)
 
     " Then the opening tag:
     call setpos('.', change.opening_position)
