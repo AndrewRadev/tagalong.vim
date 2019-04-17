@@ -7,30 +7,19 @@ function! tagalong#Init()
   endif
   let b:tagalong_initialized = 1
 
-  nnoremap <buffer> <silent> cw  :call tagalong#Trigger('w')<cr>cw
-  nnoremap <buffer> <silent> ce  :call tagalong#Trigger('e')<cr>ce
-  nnoremap <buffer> <silent> cW  :call tagalong#Trigger('W')<cr>cW
-  nnoremap <buffer> <silent> cE  :call tagalong#Trigger('E')<cr>cE
-  nnoremap <buffer> <silent> ciw :call tagalong#Trigger('iw')<cr>ciw
-  nnoremap <buffer> <silent> caw :call tagalong#Trigger('aw')<cr>caw
-  nnoremap <buffer> <silent> ci< :call tagalong#Trigger('i<')<cr>ci<
-  nnoremap <buffer> <silent> ci> :call tagalong#Trigger('i>')<cr>ci>
-  nnoremap <buffer> <silent> ct> :call tagalong#Trigger('t>')<cr>ct>
+  nnoremap <buffer> <silent> c :call tagalong#Trigger()<cr>c
+  nnoremap <buffer> <silent> C :call tagalong#Trigger()<cr>C
+  nnoremap <buffer> <silent> v :call tagalong#Trigger()<cr>v
+  nnoremap <buffer> <silent> i :call tagalong#Trigger()<cr>i
+  nnoremap <buffer> <silent> a :call tagalong#Trigger()<cr>a
 
   autocmd InsertLeave <buffer> call tagalong#Apply()
 endfunction
 
-function! tagalong#Trigger(motion)
+function! tagalong#Trigger()
   call inputsave()
 
   call tagalong#util#PushCursor()
-  let motion = a:motion
-  if motion ==# 'w'
-    " special case implemented by Vim
-    let motion = 'e'
-  elseif motion ==# 'W'
-    let motion = 'E'
-  endif
 
   if tagalong#util#SearchUnderCursor(s:opening_regex)
     " We are on an opening tag
@@ -45,7 +34,6 @@ function! tagalong#Trigger(motion)
       let closing_position[2] += 1
 
       let b:tag_change = {
-            \ 'motion':           motion,
             \ 'source':           'opening',
             \ 'old_tag':          tag,
             \ 'opening_position': opening_position,
@@ -62,7 +50,6 @@ function! tagalong#Trigger(motion)
 
     if opening_position != closing_position && tagalong#util#SearchUnderCursor('<\V'.tag.'\m\>', 'n')
       let b:tag_change = {
-            \ 'motion':           motion,
             \ 'source':           'closing',
             \ 'old_tag':          tag,
             \ 'opening_position': opening_position,
