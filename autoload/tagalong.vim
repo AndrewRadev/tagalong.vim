@@ -6,6 +6,7 @@ function! tagalong#Init()
 
   nnoremap <buffer> <silent> cw  :call tagalong#Trigger('w')<cr>cw
   nnoremap <buffer> <silent> ce  :call tagalong#Trigger('e')<cr>ce
+  nnoremap <buffer> <silent> cE  :call tagalong#Trigger('E')<cr>cE
   nnoremap <buffer> <silent> ciw :call tagalong#Trigger('iw')<cr>ciw
   nnoremap <buffer> <silent> caw :call tagalong#Trigger('aw')<cr>caw
   nnoremap <buffer> <silent> ci< :call tagalong#Trigger('i<')<cr>ci<
