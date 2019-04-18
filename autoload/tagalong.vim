@@ -35,7 +35,6 @@ function! tagalong#Trigger()
 
       let b:tag_change = {
             \ 'source':           'opening',
-            \ 'old_tag':          tag,
             \ 'opening_position': opening_position,
             \ 'closing_position': closing_position,
             \ }
@@ -51,7 +50,6 @@ function! tagalong#Trigger()
     if opening_position != closing_position && tagalong#util#SearchUnderCursor('<\V'.tag.'\m\>', 'n')
       let b:tag_change = {
             \ 'source':           'closing',
-            \ 'old_tag':          tag,
             \ 'opening_position': opening_position,
             \ 'closing_position': closing_position,
             \ }
