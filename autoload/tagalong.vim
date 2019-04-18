@@ -89,9 +89,6 @@ function! tagalong#Apply()
       return
     endif
 
-    " Debug change
-    " Debug [new_tag, new_opening, new_closing]
-
     if new_tag !~ '^[^<>]\+$'
       " we've had a change that resulted in something weird, like an empty
       " <></>, bail out
