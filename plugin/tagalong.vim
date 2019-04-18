@@ -20,24 +20,27 @@ let s:keepcpo = &cpo
 set cpo&vim
 
 if !exists('g:tagalong_filetypes')
-  let g:tagalong_filetypes = ['html', 'xml', 'jsx', 'javascript.jsx']
+  let g:tagalong_filetypes = ['html', 'xml', 'jsx']
 endif
 
 augroup tagalong
   autocmd!
 
-  for filetype in g:tagalong_filetypes
-    exe 'autocmd FileType '.filetype.' call tagalong#Init()'
-  endfor
+  autocmd FileType * call s:InitIfSupportedFiletype(expand('<amatch>'))
 augroup END
 
-" TODO (2019-04-14) Store and restore typeahead? (Fast typing)
-" (inputsave/inputrestore)
+" Needed in order to handle dot-filetypes like "javascript.jsx" or
+" "custom.html".
+function! s:InitIfSupportedFiletype(filetype_string)
+  for filetype in split(a:filetype_string, '\.')
+    if index(g:tagalong_filetypes, filetype) >= 0
+      call tagalong#Init()
+      return
+    endif
+  endfor
+endfunction
 
-" TODO (2019-04-14) Visual + c?
 " TODO (2019-04-14) repeat.vim support
-" TODO (2019-04-14) multichange support? Hack in direct support, or provide
-" some form of callback? maparg?
 
 let &cpo = s:keepcpo
 unlet s:keepcpo
