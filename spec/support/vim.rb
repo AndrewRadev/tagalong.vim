@@ -9,6 +9,7 @@ module Support
       keys = keys.gsub('"', '\"')
       result = vim.echo("feedkeys(\"#{keys}\\<esc>\", 't')")
       fail result if result != "0"
+      vim.write
     end
 
     def assert_file_contents(string)

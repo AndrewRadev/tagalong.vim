@@ -9,6 +9,7 @@ Vimrunner::RSpec.configure do |config|
 
   config.start_vim do
     vim = Vimrunner.start_gvim
+    vim.set('backspace', 'indent,eol,start')
     vim.add_plugin(plugin_path, 'plugin/tagalong.vim')
     vim
   end

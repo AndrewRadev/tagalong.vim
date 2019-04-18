@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe "cw" do
+RSpec.describe "HTML" do
   let(:filename) { 'test.html' }
 
   specify "changing a simple multiline tag" do
@@ -12,7 +12,6 @@ RSpec.describe "cw" do
 
     vim.search('div')
     edit('cwarticle')
-    vim.write
 
     assert_file_contents <<~HTML
       <article>
@@ -28,7 +27,6 @@ RSpec.describe "cw" do
 
     vim.search('div')
     edit('cwarticle')
-    vim.write
 
     assert_file_contents <<~HTML
       <article><span>Text</span></article>
@@ -36,7 +34,6 @@ RSpec.describe "cw" do
 
     vim.search('span')
     edit('cwa')
-    vim.write
 
     assert_file_contents <<~HTML
       <article><a>Text</a></article>
@@ -52,7 +49,6 @@ RSpec.describe "cw" do
 
     vim.search('div')
     edit('cwarticle')
-    vim.write
 
     assert_file_contents <<~HTML
       <article class="example">
@@ -62,7 +58,6 @@ RSpec.describe "cw" do
 
     vim.search('span')
     edit('cwa href="http://test.host"')
-    vim.write
 
     assert_file_contents <<~HTML
       <article class="example">
@@ -80,7 +75,6 @@ RSpec.describe "cw" do
 
     vim.search('div')
     edit('cw')
-    vim.write
 
     assert_file_contents <<~HTML
       < class="example">
@@ -90,7 +84,6 @@ RSpec.describe "cw" do
 
     vim.search('span')
     edit('cw')
-    vim.write
 
     assert_file_contents <<~HTML
       < class="example">
@@ -108,7 +101,6 @@ RSpec.describe "cw" do
 
     vim.search('<\/\zsdiv')
     edit('cwarticle')
-    vim.write
 
     assert_file_contents <<~HTML
       <article class="example">

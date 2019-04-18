@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe "cw" do
+RSpec.describe "Special tags" do
   let(:filename) { 'test.html' }
 
   specify "XML-style namespaces with :" do
@@ -12,7 +12,6 @@ RSpec.describe "cw" do
 
     vim.search('namespace')
     edit('cWscope:name')
-    vim.write
 
     assert_file_contents <<~HTML
       <scope:name attribute="value">
@@ -30,7 +29,6 @@ RSpec.describe "cw" do
 
     vim.search('DatePicker')
     edit('cwDateTimePicker')
-    vim.write
 
     assert_file_contents <<~HTML
       <MyComponents.DateTimePicker color="blue">
@@ -40,7 +38,6 @@ RSpec.describe "cw" do
 
     vim.search('<\zsMyComponents')
     edit('cWUtil.OtherStuff')
-    vim.write
 
     assert_file_contents <<~HTML
       <Util.OtherStuff color="blue">
@@ -58,7 +55,6 @@ RSpec.describe "cw" do
 
     vim.search('DatePicker')
     edit('cwDateTimePicker')
-    vim.write
 
     assert_file_contents <<~HTML
       <MyComponents/DateTimePicker color="blue">
@@ -68,7 +64,6 @@ RSpec.describe "cw" do
 
     vim.search('<\zsMyComponents')
     edit('cWUtil/OtherStuff')
-    vim.write
 
     assert_file_contents <<~HTML
       <Util/OtherStuff color="blue">
@@ -86,7 +81,6 @@ RSpec.describe "cw" do
 
     vim.search('\/MyComponents\.\zsDatePicker')
     edit('cwDateTimePicker')
-    vim.write
 
     assert_file_contents <<~HTML
       <MyComponents.DateTimePicker color="blue">
@@ -96,7 +90,6 @@ RSpec.describe "cw" do
 
     vim.search('<\/\zsMyComponents')
     edit('cWUtil.OtherStuff>')
-    vim.write
 
     assert_file_contents <<~HTML
       <Util.OtherStuff color="blue">
