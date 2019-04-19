@@ -40,7 +40,5 @@ function! s:InitIfSupportedFiletype(filetype_string)
   endfor
 endfunction
 
-" TODO (2019-04-14) repeat.vim support
-
 let &cpo = s:keepcpo
 unlet s:keepcpo
