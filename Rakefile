@@ -1,5 +1,9 @@
 task :default do
-  sh 'rspec spec'
+  if ENV['TRAVIS_CI']
+    sh 'xvfb-run rspec spec'
+  else
+    sh 'rspec spec'
+  end
 end
 
 desc "Prepare archive for deployment"
