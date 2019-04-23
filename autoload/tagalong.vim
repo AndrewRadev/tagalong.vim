@@ -79,14 +79,26 @@ function! tagalong#Reapply()
 
   call tagalong#util#PushCursor()
 
+  " Note: applying open -> adjust -> close, because the `.` operator seems to
+  " reapply the visual-mode change otherwise, on v7.4. This doesn't happen on
+  " > v8.0, but hard to say if this is a stable situation. Better to be safe.
+
   try
-    " First the closing, in case the length changes:
+    " Reapply the last "normal" operation on the opening, whatever it was
+    call setpos('.', change.opening_position)
+    let old_opening = tagalong#util#GetMotion('va>')
+    normal! .
+    let new_opening = tagalong#util#GetMotion('va>')
+
+    if change.opening_position[1] == change.closing_position[1]
+      " lines are the same, we need to readjust the closing position now
+      let delta = len(new_opening) - len(old_opening)
+      let change.closing_position[2] += delta
+    endif
+
+    " Change the (potentially updated) closing position
     call setpos('.', change.closing_position)
     call tagalong#util#ReplaceMotion('va>', last_change.new_closing)
-
-    " Then reapply the last "normal" operation on the opening, whatever it was
-    call setpos('.', change.opening_position)
-    normal! .
 
     silent! call repeat#set(":call tagalong#Reapply()\<cr>")
   finally
