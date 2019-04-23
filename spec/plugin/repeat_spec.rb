@@ -6,8 +6,6 @@ RSpec.describe "repeating" do
   let(:filename) { 'test.html' }
 
   specify "leaving other content intact" do
-    pending "Doesn't seem to work on TravisCI" if ENV['TRAVIS_CI']
-
     set_file_contents <<~EOF
       <ul>
         <span class="first">One</span>
@@ -37,8 +35,6 @@ RSpec.describe "repeating" do
   end
 
   specify "removing other content" do
-    pending "Doesn't seem to work on TravisCI" if ENV['TRAVIS_CI']
-
     set_file_contents <<~EOF
       <ul>
         <span class="first">One</span>
