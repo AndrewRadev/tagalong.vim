@@ -87,4 +87,21 @@ RSpec.describe "Change types" do
       </span>
     HTML
   end
+
+  specify "change in <> with cursor anywhere in brackets" do
+    set_file_contents <<~HTML
+      <div class="test">
+        <span>Text</span>
+      </div>
+    HTML
+
+    vim.search('class')
+    edit('ci>span')
+
+    assert_file_contents <<~HTML
+      <span>
+        <span>Text</span>
+      </span>
+    HTML
+  end
 end

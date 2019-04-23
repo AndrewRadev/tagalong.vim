@@ -107,7 +107,7 @@ function! tagalong#Reapply()
 endfunction
 
 function! s:GetChangePositions()
-  if tagalong#util#SearchUnderCursor(s:opening_regex)
+  if tagalong#util#SearchUnderCursor(s:opening_regex.'.\{-}>')
     " We are on an opening tag
     let tag = matchstr(tagalong#util#GetMotion('va>'), s:opening_regex)
 
