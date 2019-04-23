@@ -58,6 +58,14 @@ function! tagalong#Apply()
 
     silent! call repeat#set(":call tagalong#Reapply()\<cr>")
 
+    if g:tagalong_verbose > 0
+      if change.source == 'opening'
+        echomsg "Tagalong: Closing tag changed to ".change.new_closing
+      elseif change.source == 'closing'
+        echomsg "Tagalong: Opening tag changed to ".change.new_opening
+      endif
+    endif
+
     " For tagalong#Reapply()
     let b:last_tag_change = change
   finally

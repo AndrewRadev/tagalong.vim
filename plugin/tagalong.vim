@@ -27,6 +27,10 @@ if !exists('g:tagalong_mappings')
   let g:tagalong_mappings = ['c', 'C', 'v', 'i', 'a']
 endif
 
+if !exists('g:tagalong_verbose')
+  let g:tagalong_verbose = 0
+endif
+
 augroup tagalong
   autocmd!
 
