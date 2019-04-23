@@ -7,11 +7,9 @@ function! tagalong#Init()
   endif
   let b:tagalong_initialized = 1
 
-  nnoremap <buffer> <silent> c :call tagalong#Trigger()<cr>c
-  nnoremap <buffer> <silent> C :call tagalong#Trigger()<cr>C
-  nnoremap <buffer> <silent> v :call tagalong#Trigger()<cr>v
-  nnoremap <buffer> <silent> i :call tagalong#Trigger()<cr>i
-  nnoremap <buffer> <silent> a :call tagalong#Trigger()<cr>a
+  for key in g:tagalong_mappings
+    exe 'nnoremap <buffer> <silent> '.key.' :call tagalong#Trigger()<cr>'.key
+  endfor
 
   autocmd InsertLeave <buffer> call tagalong#Apply()
 endfunction

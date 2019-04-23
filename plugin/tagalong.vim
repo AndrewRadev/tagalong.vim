@@ -23,6 +23,10 @@ if !exists('g:tagalong_filetypes')
   let g:tagalong_filetypes = ['html', 'xml', 'jsx']
 endif
 
+if !exists('g:tagalong_mappings')
+  let g:tagalong_mappings = ['c', 'C', 'v', 'i', 'a']
+endif
+
 augroup tagalong
   autocmd!
 
