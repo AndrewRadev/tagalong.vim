@@ -1,12 +1,12 @@
-*tagalong.txt*	TODO
+*tagalong.txt*	Change an HTML(ish) opening tag and take the closing one along, too
 
 ==============================================================================
 CONTENTS                                        *tagalong*   *tagalong-contents*
 
     Installation................................: |tagalong-installation|
     Usage.......................................: |tagalong-usage|
-    Settings....................................: |tagalong-settings|
     Internals...................................: |tagalong-internals|
+    Settings....................................: |tagalong-settings|
     Issues......................................: |tagalong-issues|
 
 
@@ -16,6 +16,8 @@ INSTALLATION                                            *tagalong-installation*
 There are several ways to install the plugin. The recommended one is by using
 Tim Pope's pathogen (http://www.vim.org/scripts/script.php?script_id=2332). In
 that case, you can clone the plugin's git repository like so:
+
+TODO use "packadd" instead
 >
     git clone https://github.com/AndrewRadev/tagalong.vim ~/.vim/bundle/tagalong
 <
@@ -25,30 +27,129 @@ The command is (provided you're in ~/.vim):
 >
     git submodule add https://github.com/AndrewRadev/tagalong.vim bundle/tagalong
 <
-
 Another way is to simply copy all the essential directories inside the ~/.vim
-directory: TODO list of directories
+directory: autoload, doc, plugin.
 
 
 ==============================================================================
 USAGE                                                          *tagalong-usage*
 
-TODO
+The plugin is designed to automatically rename closing HTML/XML tags when
+editing opening ones (or the other way around). For the most part, you should
+be able to edit your code normally (see below for limitations) and the plugin
+would take care of the renaming once you leave insert mode.
 
+It only activates for particular filetypes. By default, those are: html, xml,
+jsx, eruby, ejs, eco, htmldjango.
+
+You can use the |g:tagalong_filetypes| variable to change the list, add
+support for more filetypes, or only keep the ones you use. (Consider opening
+an issue to suggest changes to the default list.) See |tagalong-settings| for
+details.
+
+Requirements ~
+
+The plugin requires the built-in "matchit" plugin, but it takes care to load
+it, if it isn't already. If, for some reason, it can't be loaded, this plugin
+will silently not work, to avoid problems with minimal installations. You can
+learn more about matchit by executing `:help matchit`.
+
+Features and Limitations ~
+
+Not every method of changing the tag can be intercepted, or it might be too
+complicated or too invasive to do so. Here's the methods that work with the
+plugin:
+
+- `c`: Anything involving a `c` operation, including `cw`, `ci<`, `cE`, or `C`.
+- `v` + `c`: Selecting anything in visual mode and changing it with a `c`.
+- `i`, `a`: Entering insert mode and making direct changes.
+
+For all of these, the cursor needs to be within the `<>` angle brackets of the
+tag. If you change it from the outside, like with a `C` starting at the
+opening angle bracket, the plugin won't be activated.
+
+A few examples of making a change that WON'T trigger the plugin:
+
+- Using the `:substitute` command, for instance `:%s/<div /<span /g`.
+- Yanking some text and pasting it over.
+- Using the `r` or `x` mappings to change/delete one character.
+
+Some of these might be implemented at a later time, but others might be too
+difficult or too invasive. If you often use a method that doesn't trigger the
+plugin, consider opening a github issue to discuss it.
+
+Also note that the plugin relies on the |InsertLeave| autocommand to detect
+when to apply the change. If you exit insert mode via <c-c>, that won't be
+triggered. This is a good way to avoid the automatic behaviour, but if you
+commonly exit insert mode this way, it can be a problem. See
+|tagalong-internals| for help.
+
+You can disable the plugin for particular mappings by overriding the
+|g:tagalong_mappings| variable. See |tagalong-settings| for details.
+
+If you have vim-repeat (https://github.com/tpope/vim-repeat) installed, you
+can repeat the last tag change with the |.| operator.
 
 ==============================================================================
-SETTINGS                                                    *tagalong-settings*
+INTERNALS                                                   *tagalong-internals*
+
+The plugin installs its mappings with the function `tagalong#Init()`. All
+mappings and variables initialized are buffer-local. Instead of using
+|g:tagalong_filetypes|, you can actually just put `tagalong#Init()` in
+`~/.vim/ftplugin/<your-filetype>.vim`, and it should work. Or you can come up
+with some other criteria to activate it.
+
+All the mappings (currently) do the following:
+
+- Call the `tagalong#Trigger()` function. It stores information about the tag
+  under the cursor in a buffer-local variable.
+
+- Execute the original mapping.
+
+- Upon exiting insert mode (see |InsertLeave|), the function
+  `tagalong#Apply()` gets called, takes the stored tag information and gets
+  the changed tag and applies the change to both opening and closing tag
+
+- The `tagalong#Reapply()` function can be invoked by vim-repeat, or it can be
+  invoked manually, to perform the previous tag change.
+
+So, if you wanted to make pasting over a tag activate the plugin, it might work like this:
+>
+    " The `<c-u>` removes the current visual mode, so a function can be called
+    xnoremap <buffer> p :<c-u>call <SID>Paste()<cr>
+
+    " The <SID> above is the same as the s: here
+    function! s:Paste()
+        call tagalong#Trigger()
+
+        " gv reselects the previously-selected area, and then we just paste
+        normal! gvp
+
+        call tagalong#Apply()
+    endfunction
+<
+This is not a built-in, because it feels a bit invasive, and there's other
+plugins (and snippets) that override |p|. Plus, repeating the operation
+doesn't seem to quite work. But I hope it's a good example to illustrate how
+you could try to build something more complicated with the core functions of
+the plugin.
+
+If you commonly exit insert mode via `<c-c>`, the plugin won't be triggered,
+but you can take care of that with a mapping, if you'd like:
+>
+    inoremap <silent> <c-c> <c-c>:call tagalong#Apply()<cr>
+<
+It's generally not recommended -- `<c-c>` doesn't trigger |InsertLeave|
+semi-intentionally, I think, as an "escape hatch". But it depends on how you
+use it.
+
+==============================================================================
+SETTINGS                                                     *tagalong-settings*
 
 TODO
 
-
 ==============================================================================
-INTERNALS                                                  *tagalong-internals*
-
-TODO
-
-==============================================================================
-ISSUES                                                        *tagalong-issues*
+ISSUES                                                         *tagalong-issues*
 
 Any issues and suggestions are very welcome on the github bugtracker:
 https://github.com/AndrewRadev/tagalong.vim/issues
