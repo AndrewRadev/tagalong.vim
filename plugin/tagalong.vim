@@ -20,7 +20,7 @@ let s:keepcpo = &cpo
 set cpo&vim
 
 if !exists('g:tagalong_filetypes')
-  let g:tagalong_filetypes = ['html', 'xml', 'jsx']
+  let g:tagalong_filetypes = ['html', 'xml', 'jsx', 'eruby', 'ejs', 'eco', 'php', 'htmldjango']
 endif
 
 if !exists('g:tagalong_mappings')

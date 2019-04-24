@@ -1,5 +1,5 @@
-let s:opening_regex = '<\zs[^/>[:space:]][^>[:space:]]\+'
-let s:closing_regex = '<\/\zs[^>[:space:]]\+\ze>'
+let s:opening_regex = '<\zs\k[^>[:space:]]\+'
+let s:closing_regex = '<\/\zs\k[^>[:space:]]\+\ze>'
 
 function! tagalong#Init()
   if exists('b:tagalong_initialized')
@@ -46,7 +46,7 @@ function! tagalong#Apply()
       return
     endif
 
-    undo
+    silent undo
 
     " First the closing, in case the length changes:
     call setpos('.', change.closing_position)
@@ -156,11 +156,15 @@ endfunction
 function! s:FillChangeContents(change)
   let change = a:change
 
+  call tagalong#util#PushCursor()
+
   if change.source == 'opening'
+    call setpos('.', change.opening_position)
     let new_opening = tagalong#util#GetMotion('va>')
     let new_tag     = matchstr(new_opening, '^<\zs[^>[:space:]]\+')
     let new_closing = '</'.new_tag.'>'
   elseif change.source == 'closing'
+    call setpos('.', change.closing_position)
     let new_closing = tagalong#util#GetMotion('va>')
     let new_tag     = matchstr(new_closing, '^<\/\zs[^>[:space:]]\+')
 
@@ -175,6 +179,7 @@ function! s:FillChangeContents(change)
   if new_tag !~ '^[^<>]\+$'
     " we've had a change that resulted in something weird, like an empty
     " <></>, bail out
+    call tagalong#util#PopCursor()
     return {}
   endif
 
@@ -182,5 +187,6 @@ function! s:FillChangeContents(change)
   let change.new_opening = new_opening
   let change.new_closing = new_closing
 
+  call tagalong#util#PopCursor()
   return change
 endfunction
