@@ -62,11 +62,15 @@ function! tagalong#util#ReplaceMotion(motion, text)
 
   let saved_register_text = getreg('"', 1)
   let saved_register_type = getregtype('"')
+  let saved_opening_visual = getpos("'<")
+  let saved_closing_visual = getpos("'>")
 
   call setreg('"', a:text, 'v')
   exec 'silent normal! '.a:motion.'p'
 
   call setreg('"', saved_register_text, saved_register_type)
+  call setpos("'<", saved_opening_visual)
+  call setpos("'>", saved_closing_visual)
   let &clipboard = saved_clipboard
 endfunction
 
@@ -86,6 +90,8 @@ function! tagalong#util#GetMotion(motion)
 
   let saved_register_text = getreg('z', 1)
   let saved_register_type = getregtype('z')
+  let saved_opening_visual = getpos("'<")
+  let saved_closing_visual = getpos("'>")
 
   let @z = ''
   exec 'silent normal! '.a:motion.'"zy'
@@ -97,6 +103,8 @@ function! tagalong#util#GetMotion(motion)
   endif
 
   call setreg('z', saved_register_text, saved_register_type)
+  call setpos("'<", saved_opening_visual)
+  call setpos("'>", saved_closing_visual)
   call tagalong#util#PopCursor()
 
   return text
