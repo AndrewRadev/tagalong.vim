@@ -75,11 +75,13 @@ endfunction
 
 function! tagalong#Reapply()
   if !exists('b:last_tag_change')
+    normal! .
     return
   endif
   let last_change = b:last_tag_change
   let change = s:GetChangePositions()
   if change == {}
+    normal! .
     return
   endif
 

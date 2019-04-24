@@ -62,4 +62,23 @@ RSpec.describe "repeating" do
       </ul>
     EOF
   end
+
+  specify "repeating the last normal operation if tag editing does not apply" do
+    set_file_contents <<~EOF
+      <div>Text</div>
+      something
+    EOF
+
+    vim.search('div')
+    edit('cwarticle')
+
+    vim.search('something')
+    vim.echo('tagalong#Reapply()')
+    vim.write
+
+    assert_file_contents <<~EOF
+      <article>Text</article>
+      article
+    EOF
+  end
 end
