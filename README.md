@@ -76,11 +76,65 @@ If you commonly exit insert mode via `<c-c>`, the plugin won't be triggered, but
 inoremap <silent> <c-c> <c-c>:call tagalong#Apply()<cr>
 ```
 
-It's generally not recommended -- `<c-c>` doesn't trigger |InsertLeave| semi-intentionally, I think, as an "escape hatch". But it depends on how you use it.
+It's generally not recommended -- `<c-c>` doesn't trigger `InsertLeave` semi-intentionally, I think, as an "escape hatch". But it depends on how you use it.
 
 ## Settings
 
-TODO
+### `g:tagalong_filetypes`
+
+Example usage:
+
+``` vim
+let g:tagalong_filetypes = ['html']
+```
+
+Default value:
+
+```
+['html', 'xml', 'jsx', 'eruby', 'ejs', 'eco', 'php', 'htmldjango']
+```
+
+This variable holds all of the filetypes that the plugin will install mappings for. If, for some reason, you'd like to avoid its behaviour for particular markup languages, you can set the variable to a list of the ones you'd like to keep.
+
+If you'd like to add values to this list, you have to ensure the plugin is loaded first, and then modify that variable. For instance, by using `:runtime`:
+
+``` vim
+runtime plugin/tagalong.vim
+call add(g:tagalong_filetypes, 'custom')
+call add(g:tagalong_filetypes, 'another')
+```
+
+You could also achieve this via `:packadd` -- the important thing is that the setting is initialized.
+
+If you set it to an empty list, `[]`, the plugin will not be automatically installed for any filetypes, but you can activate it yourself by calling the `tagalong#Init()` function in a particular buffer.
+
+### `g:tagalong_mappings`
+
+Example usage:
+
+``` vim
+let g:tagalong_mappings = ['i', 'a']
+```
+
+Default value: `['c', 'C', 'v', 'i', 'a']`
+
+This setting controls which types of editing will have mappings installed for them. Currently, these are literal mappings -- each character in the list is a mapping that you can see by executing `:nmap c`, for instance. But it's not necessary to be the case -- in the future, the values in the list might be labels of some sort that will be explained in more detail in the documentation.
+
+Changing this variable means that editing the buffer with the removed mappings won't trigger the plugin. You could set it to `['i', 'a']` if you usually edit tags by entering insert mode and backspacing over the tag. That way, the `c` family of mappings could be remapped by some other plugin, for instance. Or you could use them to give yourself an escape hatch, if the plugin bugs out or you have good reason not to update the other tag.
+
+If you set it to an empty list, `[]`, the plugin will not be activated by any mappings, but you can read the "Internals and Advanced Usage" section for other ways of using it.
+
+### `g:tagalong_verbose`
+
+Example usage:
+
+``` vim
+let g:tagalong_verbose = 1
+```
+
+Default value: `0`
+
+If you set this value to 1, the plugin will print out a message every time it auto-updates a closing/opening tag. Could be useful if you'd like to be sure the change was made, especially if it's offscreen.
 
 ## Alternatives
 
