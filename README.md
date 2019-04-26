@@ -122,6 +122,8 @@ This setting controls which types of editing will have mappings installed for th
 
 Changing this variable means that editing the buffer with the removed mappings won't trigger the plugin. You could set it to `['i', 'a']` if you usually edit tags by entering insert mode and backspacing over the tag. That way, the `c` family of mappings could be remapped by some other plugin, for instance. Or you could use them to give yourself an escape hatch, if the plugin bugs out or you have good reason not to update the other tag.
 
+Note that the plugin will attempt to respect your previous mappings of any of these keys. If you have an `nnoremap c` in your `.vimrc` file, it'll be applied. Mapping `cw`, on the other hand, will likely just use your mapping, instead of hitting the plugin at all. If you're having problems with this, please open a github issue.
+
 If you set it to an empty list, `[]`, the plugin will not be activated by any mappings, but you can read the "Internals and Advanced Usage" section for other ways of using it.
 
 ### `g:tagalong_verbose`

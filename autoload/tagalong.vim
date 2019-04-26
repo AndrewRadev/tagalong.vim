@@ -8,7 +8,12 @@ function! tagalong#Init()
   let b:tagalong_initialized = 1
 
   for key in g:tagalong_mappings
-    exe 'nnoremap <buffer> <silent> '.key.' :call tagalong#Trigger()<cr>'.key
+    let mapping = maparg(key, 'n')
+    if mapping == ''
+      let mapping = key
+    endif
+
+    exe 'nnoremap <buffer> <silent> '.key.' :call tagalong#Trigger()<cr>'.mapping
   endfor
 
   autocmd InsertLeave <buffer> call tagalong#Apply()
