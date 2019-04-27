@@ -37,6 +37,9 @@ augroup tagalong
   autocmd FileType * call s:InitIfSupportedFiletype(expand('<amatch>'))
 augroup END
 
+" needed for silent execution of the . operator
+nnoremap <silent> <Plug>TagalongReapply :call tagalong#Reapply()<cr>
+
 " Needed in order to handle dot-filetypes like "javascript.jsx" or
 " "custom.html".
 function! s:InitIfSupportedFiletype(filetype_string)

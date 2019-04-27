@@ -61,7 +61,7 @@ function! tagalong#Apply()
     call setpos('.', change.opening_position)
     call tagalong#util#ReplaceMotion('va>', change.new_opening)
 
-    silent! call repeat#set(":call tagalong#Reapply()\<cr>")
+    silent! call repeat#set("\<Plug>TagalongReapply")
 
     if g:tagalong_verbose > 0
       if change.source == 'opening'
@@ -113,7 +113,7 @@ function! tagalong#Reapply()
     call setpos('.', change.closing_position)
     call tagalong#util#ReplaceMotion('va>', last_change.new_closing)
 
-    silent! call repeat#set(":call tagalong#Reapply()\<cr>")
+    silent! call repeat#set("\<Plug>TagalongReapply")
   finally
     call tagalong#util#PopCursor()
   endtry
