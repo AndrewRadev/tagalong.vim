@@ -6,7 +6,7 @@
 
 The plugin is designed to automatically rename closing HTML/XML tags when editing opening ones (or the other way around). For the most part, you should be able to edit your code normally (see below for limitations) and the plugin would take care of the renaming once you leave insert mode:
 
-![Demo](http://i.andrewradev.com/d31c94c2db184db8883726031deff69c.gif)
+![Demo](http://i.andrewradev.com/f52337c3b41b6f2269407c1b332caf9c.gif)
 
 It only activates for particular filetypes. By default, those are: html, xml, jsx, eruby, ejs, eco, htmldjango.
 
