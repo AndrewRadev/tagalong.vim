@@ -8,9 +8,9 @@ The plugin is designed to automatically rename closing HTML/XML tags when editin
 
 ![Demo](http://i.andrewradev.com/f52337c3b41b6f2269407c1b332caf9c.gif)
 
-It only activates for particular filetypes. By default, those are: html, xml, jsx, eruby, ejs, eco, htmldjango.
+Apart from HTML tags, it'll also detect XML-style `<namespaced:tags>`, react-style `<Component.Subcomponents>`, ember-style `<component/paths>`.
 
-You can use the `g:tagalong_filetypes` variable to change the list, add support for more filetypes, or only keep the ones you use. (Consider opening an issue to suggest changes to the default list.) See the "Settings" section for details.
+The plugin only activates for HTML-like buffers, or at least all the ones that I could think of. You can see the full list in the setting `g:tagalong_filetypes`. You can use that variable to change the list, add support for more filetypes, or only keep the ones you use. (Consider opening an issue to suggest changes to the default list.) See the "Settings" section for details.
 
 ## Requirements
 
