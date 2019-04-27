@@ -134,6 +134,7 @@ function! s:GetChangePositions()
 
       return {
             \ 'source':           'opening',
+            \ 'old_tag':          tag,
             \ 'opening_position': opening_position,
             \ 'closing_position': closing_position,
             \ }
@@ -149,6 +150,7 @@ function! s:GetChangePositions()
     if opening_position != closing_position && tagalong#util#SearchUnderCursor('<\V'.tag.'\m\>', 'n')
       return {
             \ 'source':           'closing',
+            \ 'old_tag':          tag,
             \ 'opening_position': opening_position,
             \ 'closing_position': closing_position,
             \ }
@@ -184,6 +186,12 @@ function! s:FillChangeContents(change)
   if new_tag !~ '^[^<>]\+$'
     " we've had a change that resulted in something weird, like an empty
     " <></>, bail out
+    call tagalong#util#PopCursor()
+    return {}
+  endif
+
+  if new_tag == change.old_tag
+    " nothing to change
     call tagalong#util#PopCursor()
     return {}
   endif
