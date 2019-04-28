@@ -23,6 +23,10 @@ if !exists('g:tagalong_filetypes')
   let g:tagalong_filetypes = ['html', 'xml', 'jsx', 'eruby', 'ejs', 'eco', 'php', 'htmldjango']
 endif
 
+if !exists('g:tagalong_additional_filetypes')
+  let g:tagalong_additional_filetypes = []
+endif
+
 if !exists('g:tagalong_mappings')
   let g:tagalong_mappings = ['c', 'C', 'v', 'i', 'a']
 endif
@@ -44,7 +48,8 @@ nnoremap <silent> <Plug>TagalongReapply :call tagalong#Reapply()<cr>
 " "custom.html".
 function! s:InitIfSupportedFiletype(filetype_string)
   for filetype in split(a:filetype_string, '\.')
-    if index(g:tagalong_filetypes, filetype) >= 0
+    if index(g:tagalong_filetypes, filetype) >= 0 ||
+          \ index(g:tagalong_additional_filetypes, filetype) >= 0
       call tagalong#Init()
       return
     endif
