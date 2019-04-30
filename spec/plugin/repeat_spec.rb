@@ -81,4 +81,27 @@ RSpec.describe "repeating" do
       article
     EOF
   end
+
+  specify "repeating the last normal operation if tag editing applied to other part of tag" do
+    set_file_contents <<~EOF
+      <span class="one">One</span>
+      <span class="two">Two</span>
+      <span class="three">Three</span>
+    EOF
+
+    vim.search('span class="one"')
+    edit('cwli')
+    vim.search('two')
+    vim.echo('tagalong#Reapply()')
+    vim.search('span class="three"')
+    vim.echo('tagalong#Reapply()')
+
+    vim.write
+
+    assert_file_contents <<~EOF
+      <li class="one">One</li>
+      <span class="li">Two</span>
+      <li class="three">Three</li>
+    EOF
+  end
 end

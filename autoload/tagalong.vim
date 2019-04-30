@@ -84,6 +84,7 @@ function! tagalong#Reapply()
     return
   endif
   let last_change = b:last_tag_change
+
   let change = s:GetChangePositions()
   if change == {}
     normal! .
@@ -97,21 +98,41 @@ function! tagalong#Reapply()
   " > v8.0, but hard to say if this is a stable situation. Better to be safe.
 
   try
-    " Reapply the last "normal" operation on the opening, whatever it was
-    call setpos('.', change.opening_position)
-    let old_opening = tagalong#util#GetMotion('va>')
-    normal! .
-    let new_opening = tagalong#util#GetMotion('va>')
+    if change.source == 'closing'
+      " We can safely just replace the contents:
+      " First the closing, in case the length changes:
+      call setpos('.', change.closing_position)
+      call tagalong#util#ReplaceMotion('va>', change.new_closing)
 
-    if change.opening_position[1] == change.closing_position[1]
-      " lines are the same, we need to readjust the closing position now
-      let delta = len(new_opening) - len(old_opening)
-      let change.closing_position[2] += delta
+      " Then the opening tag:
+      call setpos('.', change.opening_position)
+      call tagalong#util#ReplaceMotion('va>', change.new_opening)
+    elseif change.source == 'opening'
+      " First, reapply the last "normal" operation, whatever it was
+      let old_opening = tagalong#util#GetMotion('va>')
+      let old_tag     = matchstr(old_opening, s:opening_regex)
+      normal! .
+      let new_opening = tagalong#util#GetMotion('va>')
+      let new_tag     = matchstr(new_opening, s:opening_regex)
+
+      if old_tag == new_tag
+        " then there's nothing else to do
+        silent! call repeat#set("\<Plug>TagalongReapply")
+        return
+      endif
+
+      if change.opening_position[1] == change.closing_position[1]
+        " lines are the same, we need to readjust the closing position now
+        let delta = len(new_opening) - len(old_opening)
+        let change.closing_position[2] += delta
+      endif
+
+      " Change the (potentially updated) closing position
+      call setpos('.', change.closing_position)
+      call tagalong#util#ReplaceMotion('va>', last_change.new_closing)
+    else
+      echoerr "Unexpected tag change source: " . change.source
     endif
-
-    " Change the (potentially updated) closing position
-    call setpos('.', change.closing_position)
-    call tagalong#util#ReplaceMotion('va>', last_change.new_closing)
 
     silent! call repeat#set("\<Plug>TagalongReapply")
   finally
@@ -120,44 +141,51 @@ function! tagalong#Reapply()
 endfunction
 
 function! s:GetChangePositions()
-  if tagalong#util#SearchUnderCursor(s:opening_regex.'.\{-}>')
-    " We are on an opening tag
-    let tag = matchstr(tagalong#util#GetMotion('va>'), s:opening_regex)
+  call tagalong#util#PushCursor()
 
-    let opening_position = getpos('.')
-    normal %
-    let closing_position = getpos('.')
+  try
+    if tagalong#util#SearchUnderCursor(s:opening_regex.'.\{-}>')
+      " We are on an opening tag
+      let tag = matchstr(tagalong#util#GetMotion('va>'), s:opening_regex)
 
-    if opening_position != closing_position && tagalong#util#SearchUnderCursor('</\V'.tag.'>', 'n')
-      " match seems to position cursor on the `/` of `</tag`
-      let closing_position[2] += 1
+      let opening_position = getpos('.')
+      normal %
+      let closing_position = getpos('.')
 
-      return {
-            \ 'source':           'opening',
-            \ 'old_tag':          tag,
-            \ 'opening_position': opening_position,
-            \ 'closing_position': closing_position,
-            \ }
+      if opening_position != closing_position && tagalong#util#SearchUnderCursor('</\V'.tag.'>', 'n')
+        " match seems to position cursor on the `/` of `</tag`
+        let closing_position[2] += 1
+
+        return {
+              \ 'source':           'opening',
+              \ 'old_tag':          tag,
+              \ 'opening_position': opening_position,
+              \ 'closing_position': closing_position,
+              \ }
+      endif
+    elseif tagalong#util#SearchUnderCursor(s:closing_regex)
+      " We are on a closing tag
+      let tag = matchstr(expand('<cWORD>'), s:closing_regex)
+
+      let closing_position = getpos('.')
+      normal %
+      let opening_position = getpos('.')
+
+      if opening_position != closing_position && tagalong#util#SearchUnderCursor('<\V'.tag.'\m\>', 'n')
+        return {
+              \ 'source':           'closing',
+              \ 'old_tag':          tag,
+              \ 'opening_position': opening_position,
+              \ 'closing_position': closing_position,
+              \ }
+      endif
     endif
-  elseif tagalong#util#SearchUnderCursor(s:closing_regex)
-    " We are on a closing tag
-    let tag = matchstr(expand('<cWORD>'), s:closing_regex)
 
-    let closing_position = getpos('.')
-    normal %
-    let opening_position = getpos('.')
 
-    if opening_position != closing_position && tagalong#util#SearchUnderCursor('<\V'.tag.'\m\>', 'n')
-      return {
-            \ 'source':           'closing',
-            \ 'old_tag':          tag,
-            \ 'opening_position': opening_position,
-            \ 'closing_position': closing_position,
-            \ }
-    endif
-  endif
-
-  return {}
+    return {}
+  finally
+    call tagalong#util#PopCursor()
+  endtry
 endfunction
 
 function! s:FillChangeContents(change)
