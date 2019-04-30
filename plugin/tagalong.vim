@@ -1,16 +1,3 @@
-" Initialize matchit, a requirement
-if !exists('g:loaded_matchit')
-  if has(':packadd')
-    packadd matchit
-  else
-    runtime macros/matchit.vim
-  endif
-endif
-if !exists('g:loaded_matchit')
-  " then loading it somehow failed, we can't continue
-  finish
-endif
-
 if exists('g:loaded_tagalong') || &cp
   finish
 endif

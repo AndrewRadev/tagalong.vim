@@ -12,10 +12,6 @@ Apart from HTML tags, it'll also detect XML-style `<namespaced:tags>`, react-sty
 
 The plugin only activates for HTML-like buffers, or at least all the ones that I could think of. You can see the full list in the setting `g:tagalong_filetypes`. You can set that variable yourself to limit it to the ones you use. You can activate the plugin for more filetypes by changing `g:tagalong_additional_filetypes` (but consider opening an issue to suggest changes to the default list). See the "Settings" section for more details.
 
-## Requirements
-
-The plugin requires the built-in "matchit" plugin, but it takes care to load it, if it isn't already. If, for some reason, it can't be loaded, this plugin will silently not work, to avoid problems with minimal installations. You can learn more about matchit by executing `:help matchit`.
-
 ## Features and Limitations
 
 Not every method of changing the tag can be intercepted, or it might be too complicated or too invasive to do so. Here's the methods that work with the plugin:

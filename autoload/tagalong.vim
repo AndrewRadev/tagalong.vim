@@ -149,7 +149,9 @@ function! s:GetChangePositions()
       let tag = matchstr(tagalong#util#GetMotion('va>'), s:opening_regex)
 
       let opening_position = getpos('.')
-      normal %
+      if s:JumpPair() <= 0
+        return {}
+      endif
       let closing_position = getpos('.')
 
       if opening_position != closing_position && tagalong#util#SearchUnderCursor('</\V'.tag.'>', 'n')
@@ -168,7 +170,9 @@ function! s:GetChangePositions()
       let tag = matchstr(expand('<cWORD>'), s:closing_regex)
 
       let closing_position = getpos('.')
-      normal %
+      if s:JumpPair() <= 0
+        return {}
+      endif
       let opening_position = getpos('.')
 
       if opening_position != closing_position && tagalong#util#SearchUnderCursor('<\V'.tag.'\m\>', 'n')
@@ -180,7 +184,6 @@ function! s:GetChangePositions()
               \ }
       endif
     endif
-
 
     return {}
   finally
@@ -230,4 +233,15 @@ function! s:FillChangeContents(change)
 
   call tagalong#util#PopCursor()
   return change
+endfunction
+
+" Reimplements matchit, since that seems to jump to li items from ul>li
+" setups, for instance
+function! s:JumpPair()
+  let search_result = searchpair(s:opening_regex, '', s:closing_regex, 'W')
+  if search_result <= 0
+    let search_result = searchpair(s:opening_regex, '', s:closing_regex, 'bW')
+  endif
+
+  return search_result
 endfunction

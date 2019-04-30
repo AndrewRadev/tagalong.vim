@@ -108,4 +108,27 @@ RSpec.describe "HTML" do
       </article>
     HTML
   end
+
+  specify "changing ul surrounding li (bug)" do
+    set_file_contents <<~HTML
+      <ul class="name">
+        <span class="one">One</span>
+        <span class="two">Two</span>
+        <span class="three">Three</span>
+      </ul>
+    HTML
+
+    vim.search('span class="one"')
+    edit('cwli')
+    vim.search('ul class="name"')
+    edit('cwli')
+
+    assert_file_contents <<~HTML
+      <li class="name">
+        <li class="one">One</li>
+        <span class="two">Two</span>
+        <span class="three">Three</span>
+      </li>
+    HTML
+  end
 end
