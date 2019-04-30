@@ -131,4 +131,25 @@ RSpec.describe "HTML" do
       </li>
     HTML
   end
+
+  specify "self-closing tags" do
+    set_file_contents <<~HTML
+      <div class="one">
+        <div class="two">
+          <br />
+        </div>
+      </div>
+    HTML
+
+    vim.search('div class="one"')
+    edit('cwspan')
+
+    assert_file_contents <<~HTML
+      <span class="one">
+        <div class="two">
+          <br />
+        </div>
+      </span>
+    HTML
+  end
 end

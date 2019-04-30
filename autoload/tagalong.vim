@@ -1,5 +1,6 @@
-let s:opening_regex = '<\zs\k[^>[:space:]]\+'
-let s:closing_regex = '<\/\zs\k[^>[:space:]]\+\ze>'
+let s:opening_regex     = '<\zs\k[^>[:space:]]\+'
+let s:closing_regex     = '<\/\zs\k[^>[:space:]]\+\ze>'
+let s:opening_end_regex = '\%([^>]\{-}[^\/]\)\=>'
 
 function! tagalong#Init()
   if exists('b:tagalong_initialized')
@@ -144,7 +145,7 @@ function! s:GetChangePositions()
   call tagalong#util#PushCursor()
 
   try
-    if tagalong#util#SearchUnderCursor(s:opening_regex.'.\{-}>')
+    if tagalong#util#SearchUnderCursor(s:opening_regex.s:opening_end_regex)
       " We are on an opening tag
       let tag = matchstr(tagalong#util#GetMotion('va>'), s:opening_regex)
 
@@ -238,9 +239,9 @@ endfunction
 " Reimplements matchit, since that seems to jump to li items from ul>li
 " setups, for instance
 function! s:JumpPair()
-  let search_result = searchpair(s:opening_regex, '', s:closing_regex, 'W')
+  let search_result = searchpair(s:opening_regex.s:opening_end_regex, '', s:closing_regex, 'W')
   if search_result <= 0
-    let search_result = searchpair(s:opening_regex, '', s:closing_regex, 'bW')
+    let search_result = searchpair(s:opening_regex.s:opening_end_regex, '', s:closing_regex, 'bW')
   endif
 
   return search_result
