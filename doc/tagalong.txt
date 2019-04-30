@@ -1,4 +1,4 @@
-*tagalong.txt*	Change an HTML(ish) opening tag and take the closing one along, too
+*tagalong.txt*	Change an HTML(ish) opening tag and take the closing one along as well
 
 ==============================================================================
 CONTENTS                                        *tagalong*   *tagalong-contents*
