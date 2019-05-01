@@ -1,5 +1,5 @@
-let s:opening_regex     = '<\zs\k[^>[:space:]]\+'
-let s:closing_regex     = '<\/\zs\k[^>[:space:]]\+\ze>'
+let s:opening_regex     = '<\zs\k[^>[:space:]]*'
+let s:closing_regex     = '<\/\zs\k[^>[:space:]]*\ze>'
 let s:opening_end_regex = '\%([^>]\{-}[^\/]\)\=>'
 
 function! tagalong#Init()

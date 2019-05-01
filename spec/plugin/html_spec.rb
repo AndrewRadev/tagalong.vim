@@ -152,4 +152,17 @@ RSpec.describe "HTML" do
       </span>
     HTML
   end
+
+  specify "single-letter tags" do
+    set_file_contents <<~HTML
+      <a>foo</a>
+    HTML
+
+    vim.search('a')
+    edit('cwspan')
+
+    assert_file_contents <<~HTML
+      <span>foo</span>
+    HTML
+  end
 end
