@@ -150,7 +150,7 @@ function! s:GetChangePositions()
       let tag = matchstr(tagalong#util#GetMotion('va>'), s:opening_regex)
 
       let opening_position = getpos('.')
-      if s:JumpPair() <= 0
+      if s:JumpPair('forwards') <= 0
         return {}
       endif
       let closing_position = getpos('.')
@@ -171,7 +171,7 @@ function! s:GetChangePositions()
       let tag = matchstr(expand('<cWORD>'), s:closing_regex)
 
       let closing_position = getpos('.')
-      if s:JumpPair() <= 0
+      if s:JumpPair('backwards') <= 0
         return {}
       endif
       let opening_position = getpos('.')
@@ -238,9 +238,10 @@ endfunction
 
 " Reimplements matchit, since that seems to jump to li items from ul>li
 " setups, for instance
-function! s:JumpPair()
-  let search_result = searchpair(s:opening_regex.s:opening_end_regex, '', s:closing_regex, 'W')
-  if search_result <= 0
+function! s:JumpPair(direction)
+  if a:direction == 'forwards'
+    let search_result = searchpair(s:opening_regex.s:opening_end_regex, '', s:closing_regex, 'W')
+  elseif a:direction == 'backwards'
     let search_result = searchpair(s:opening_regex.s:opening_end_regex, '', s:closing_regex, 'bW')
   endif
 

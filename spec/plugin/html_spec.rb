@@ -109,6 +109,27 @@ RSpec.describe "HTML" do
     HTML
   end
 
+  specify "changing closing tag nested in a different tag" do
+    set_file_contents <<~HTML
+      <article>
+        <div class="example">
+          <span>Text</span>
+        </div>
+      </article>
+    HTML
+
+    vim.search('<\/\zsdiv')
+    edit('cwnav')
+
+    assert_file_contents <<~HTML
+      <article>
+        <nav class="example">
+          <span>Text</span>
+        </nav>
+      </article>
+    HTML
+  end
+
   specify "changing ul surrounding li (bug)" do
     set_file_contents <<~HTML
       <ul class="name">
