@@ -186,4 +186,48 @@ RSpec.describe "HTML" do
       <span>foo</span>
     HTML
   end
+
+  specify "multiline opening tag with > on the same line as content" do
+    set_file_contents <<~HTML
+      <div
+        id="foo"
+        class="bar">
+        Content
+      </div>
+    HTML
+
+    vim.search('div')
+    edit('cwarticle')
+
+    assert_file_contents <<~HTML
+      <article
+        id="foo"
+        class="bar">
+        Content
+      </article>
+    HTML
+  end
+
+  specify "multiline opening tag with > on a new line" do
+    set_file_contents <<~HTML
+      <div
+        id="foo"
+        class="bar"
+      >
+        Content
+      </div>
+    HTML
+
+    vim.search('div')
+    edit('cwarticle')
+
+    assert_file_contents <<~HTML
+      <article
+        id="foo"
+        class="bar"
+      >
+        Content
+      </article>
+    HTML
+  end
 end

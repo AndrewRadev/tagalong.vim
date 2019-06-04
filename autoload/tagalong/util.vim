@@ -138,8 +138,8 @@ endfunction
 "
 function! tagalong#util#SearchUnderCursor(pattern, ...)
   let [match_start, match_end] = call('tagalong#util#SearchposUnderCursor', [a:pattern] + a:000)
-  if match_start > 0
-    return match_start
+  if match_start[0] > 0
+    return match_start[0]
   else
     return 0
   endif
@@ -148,7 +148,7 @@ endfunction
 " function! tagalong#util#SearchposUnderCursor(pattern, flags, skip) {{{2
 "
 " Searches for a match for the given pattern under the cursor. Returns the
-" start and (end + 1) column positions of the match. If nothing was found,
+" line and column positions of the match. If nothing was found,
 " returns [0, 0].
 "
 " Moves the cursor unless the 'n' flag is given.
@@ -196,30 +196,30 @@ function! tagalong#util#SearchposUnderCursor(pattern, ...)
 
   " find the end of the pattern
   if stridx(extra_flags, 'e') >= 0
-    let match_end = col('.')
+    let match_end = [line('.'), col('.')]
 
     call tagalong#util#PushCursor()
     call tagalong#util#SearchSkip(pattern, skip, 'cWb', lnum)
-    let match_start = col('.')
+    let match_start = [line('.'), col('.')]
     call tagalong#util#PopCursor()
   else
-    let match_start = col('.')
+    let match_start = [line('.'), col('.')]
     call tagalong#util#SearchSkip(pattern, skip, 'cWe', lnum)
-    let match_end = col('.')
+    let match_end = [line('.'), col('.')]
   end
 
   " set the end of the pattern to the next character, or EOL. Extra logic
   " is for multibyte characters.
   normal! l
-  if col('.') == match_end
+  if col('.') == match_end[1]
     " no movement, we must be at the end
-    let match_end = col('$')
+    let match_end[1] = col('$')
   else
-    let match_end = col('.')
+    let match_end[1] = col('.')
   endif
   call tagalong#util#PopCursor()
 
-  if !tagalong#util#ColBetween(col, match_start, match_end)
+  if !tagalong#util#PosBetween([lnum, col], match_start, match_end)
     " then the cursor is not in the pattern
     call tagalong#util#PopCursor()
     return [0, 0]
@@ -231,7 +231,7 @@ function! tagalong#util#SearchposUnderCursor(pattern, ...)
       call tagalong#util#DropCursor()
     endif
 
-    return [match_start, match_end]
+    return match_start
   endif
 endfunction
 
@@ -283,8 +283,12 @@ function! tagalong#util#SearchSkip(pattern, skip, ...)
   return match
 endfunction
 
-" Checks if the given column is within the given limits.
+" Checks if the given pos=[line, column] is within the given limits.
 "
-function! tagalong#util#ColBetween(col, start, end)
-  return a:start <= a:col && a:end > a:col
+function! tagalong#util#PosBetween(pos, start, end)
+  let start_bytepos = line2byte(a:start[0]) + a:start[1]
+  let end_bytepos   = line2byte(a:end[0])   + a:end[1]
+  let bytepos       = line2byte(a:pos[0])   + a:pos[1]
+
+  return start_bytepos <= bytepos && bytepos < end_bytepos
 endfunction
