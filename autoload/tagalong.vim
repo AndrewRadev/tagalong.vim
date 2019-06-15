@@ -39,7 +39,6 @@ function! tagalong#Deinit()
 endfunction
 
 function! tagalong#Trigger()
-  call inputsave()
   call tagalong#util#PushCursor()
 
   try
@@ -52,7 +51,6 @@ function! tagalong#Trigger()
     let b:tag_change = change
   finally
     call tagalong#util#PopCursor()
-    call inputrestore()
   endtry
 endfunction
 
