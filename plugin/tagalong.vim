@@ -24,16 +24,19 @@ endif
 
 augroup tagalong
   autocmd!
-
   autocmd FileType * call s:InitIfSupportedFiletype(expand('<amatch>'))
 augroup END
+
+" Manually enable/disable the plugin
+command TagalongInit   call tagalong#Init()
+command TagalongDeinit call tagalong#Deinit()
 
 " needed for silent execution of the . operator
 nnoremap <silent> <Plug>TagalongReapply :call tagalong#Reapply()<cr>
 
 " Needed in order to handle dot-filetypes like "javascript.jsx" or
 " "custom.html".
-function! s:InitIfSupportedFiletype(filetype_string)
+function s:InitIfSupportedFiletype(filetype_string)
   for filetype in split(a:filetype_string, '\.')
     if index(g:tagalong_filetypes, filetype) >= 0 ||
           \ index(g:tagalong_additional_filetypes, filetype) >= 0

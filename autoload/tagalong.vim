@@ -17,7 +17,25 @@ function! tagalong#Init()
     exe 'nnoremap <buffer> <silent> '.key.' :call tagalong#Trigger()<cr>'.mapping
   endfor
 
-  autocmd InsertLeave <buffer> call tagalong#Apply()
+  exe 'augroup tagalong_'.bufnr('%')
+    autocmd!
+    autocmd InsertLeave <buffer> call tagalong#Apply()
+  augroup END
+endfunction
+
+function! tagalong#Deinit()
+  if !exists('b:tagalong_initialized')
+    return
+  endif
+  unlet b:tagalong_initialized
+
+  for key in g:tagalong_mappings
+    exe 'unmap <buffer> '.key
+  endfor
+
+  exe 'augroup tagalong_'.bufnr('%')
+    autocmd!
+  augroup END
 endfunction
 
 function! tagalong#Trigger()

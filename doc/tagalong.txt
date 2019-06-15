@@ -86,7 +86,10 @@ commonly exit insert mode this way, it can be a problem. See
 |tagalong-internals| for help.
 
 You can disable the plugin for particular mappings by overriding the
-|g:tagalong_mappings| variable. See |tagalong-settings| for details.
+|g:tagalong_mappings| variable. See |tagalong-settings| for details. You can
+also disable it explicitly by calling the command |:TagalongDeinit|, and
+later re-enable it with |:TagalongInit|. This could be quite useful if you run
+into a bug and the buffer gets messed up!
 
 If you have vim-repeat (https://github.com/tpope/vim-repeat) installed, you
 can repeat the last tag change with the |.| operator.
@@ -171,12 +174,19 @@ the change was made, especially if it's offscreen.
 
 ==============================================================================
 INTERNALS                                                   *tagalong-internals*
+                                                            *TagalongInit*
+                                                            *TagalongDeinit*
 
-The plugin installs its mappings with the function `tagalong#Init()`. All
-mappings and variables initialized are buffer-local. Instead of using
-|g:tagalong_filetypes|, you can actually just put `tagalong#Init()` in
+The plugin installs its mappings with the function `tagalong#Init()` which can
+be directly called with the command `:TagalongInit`. All mappings and
+variables initialized are buffer-local. Instead of using
+|g:tagalong_filetypes|, you can actually just put `TagalongInit` at the top of
 `~/.vim/ftplugin/<your-filetype>.vim`, and it should work. Or you can come up
 with some other criteria to activate it.
+
+You can manually deactivate the plugin for the buffer with the
+`:TagalongDeinit` command, which takes care to unmap its keybindings and clear
+its autocommands.
 
 All the mappings (currently) do the following:
 
