@@ -46,32 +46,6 @@ RSpec.describe "Special tags" do
     HTML
   end
 
-  specify "emberjs-style namespaces with /" do
-    set_file_contents <<~HTML
-      <MyComponents/DatePicker color="blue">
-        <span>Text</span>
-      </MyComponents/DatePicker>
-    HTML
-
-    vim.search('DatePicker')
-    edit('cwDateTimePicker')
-
-    assert_file_contents <<~HTML
-      <MyComponents/DateTimePicker color="blue">
-        <span>Text</span>
-      </MyComponents/DateTimePicker>
-    HTML
-
-    vim.search('<\zsMyComponents')
-    edit('cWUtil/OtherStuff')
-
-    assert_file_contents <<~HTML
-      <Util/OtherStuff color="blue">
-        <span>Text</span>
-      </Util/OtherStuff>
-    HTML
-  end
-
   specify "editing the closing tag" do
     set_file_contents <<~HTML
       <MyComponents.DatePicker color="blue">

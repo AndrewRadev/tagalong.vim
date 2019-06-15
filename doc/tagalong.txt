@@ -45,8 +45,8 @@ editing opening ones (or the other way around). For the most part, you should
 be able to edit your code normally (see below for limitations) and the plugin
 would take care of the renaming once you leave insert mode.
 
-Apart from HTML tags, it'll also detect XML-style `<namespaced:tags>`,
-react-style `<Component.Subcomponents>`, ember-style `<component/paths>`.
+Apart from HTML tags, it'll also detect XML-style `<namespaced:tags>` and
+react-style `<Component.Subcomponents>`.
 
 The plugin only activates for HTML-like buffers, or at least all the ones that
 I could think of. You can see the full list in the setting

@@ -230,4 +230,21 @@ RSpec.describe "HTML" do
       </article>
     HTML
   end
+
+  specify "nested tags with self-closing ones" do
+    set_file_contents <<~HTML
+      <article>
+        <meta/>
+      </article>
+    HTML
+
+    vim.search('article')
+    edit('cwdiv')
+
+    assert_file_contents <<~HTML
+      <div>
+        <meta/>
+      </div>
+    HTML
+  end
 end
