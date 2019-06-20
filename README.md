@@ -32,7 +32,11 @@ Some of these might be implemented at a later time, but others might be too diff
 
 Also note that the plugin relies on the `InsertLeave` autocommand to detect when to apply the change. If you exit insert mode via `<c-c>`, that won't be triggered. This is a good way to avoid the automatic behaviour, but if you commonly exit insert mode this way, it can be a problem. See the "Internals and Advanced Usage" section for help.
 
-You can disable the plugin for particular mappings by overriding the `g:tagalong_mappings` variable. See the "Settings" section for details.
+You can disable the plugin for particular mappings by overriding the `g:tagalong_mappings` variable. See the "Settings" section for details.You can also disable it explicitly by calling the command `:TagalongDeinit`, and later re-enable it with `:TagalongInit`. This could be quite useful if you run into a bug and the buffer gets messed up!
+
+Large files can also be a problem. With a 100,000-line XML file and tags that wrap its entirety, the plugin really takes time, even during normal editing within a tag. To avoid this, its operation has been limited to 500 milliseconds, configurable via the `g:tagalong_timeout` variable. This means, unfortunately, that in said large file, closing tags may not be reliably updated. This should be rare, hopefully.
+
+With `g:tagalong_verbose` turned on, you'll get a message that the matching tag was NOT updated if the search for it times out. Alternatively, you can set `g:tagalong_timeout` to 0 for no timeout and, if you see a dramatic slowdown, use `<c-c>` and run `:TagalongDeinit` to disable the plugin in this buffer. You could implement an automated solution by checking the value of `line('$')`.
 
 If you have [vim-repeat](https://github.com/tpope/vim-repeat) installed, you can repeat the last tag change with the `.` operator.
 

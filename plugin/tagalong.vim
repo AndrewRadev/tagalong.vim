@@ -22,6 +22,10 @@ if !exists('g:tagalong_verbose')
   let g:tagalong_verbose = 0
 endif
 
+if !exists('g:tagalong_timeout')
+  let g:tagalong_timeout = 500
+endif
+
 augroup tagalong
   autocmd!
   autocmd FileType * call s:InitIfSupportedFiletype(expand('<amatch>'))

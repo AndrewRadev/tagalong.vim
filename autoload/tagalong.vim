@@ -55,6 +55,11 @@ function! tagalong#Trigger()
 endfunction
 
 function! tagalong#Apply()
+  if exists('b:tagalong_timeout_warning')
+    echomsg b:tagalong_timeout_warning
+    unlet b:tagalong_timeout_warning
+  endif
+
   if !exists('b:tag_change')
     return
   endif
@@ -166,7 +171,14 @@ function! s:GetChangePositions()
       let tag = matchstr(tagalong#util#GetMotion('va>'), s:opening_regex)
 
       let opening_position = getpos('.')
+      let start_jump_time = reltime()
       if s:JumpPair('forwards') <= 0
+        if g:tagalong_verbose &&
+              \ g:tagalong_timeout > 0 &&
+              \ reltimefloat(reltime(start_jump_time)) * 1000 >= g:tagalong_timeout
+          let b:tagalong_timeout_warning =
+                \ "Tagalong: Closing tag NOT updated, search timed out: ".tag
+        endif
         return {}
       endif
       let closing_position = getpos('.')
@@ -187,7 +199,14 @@ function! s:GetChangePositions()
       let tag = matchstr(expand('<cWORD>'), s:closing_regex)
 
       let closing_position = getpos('.')
+      let start_jump_time = reltime()
       if s:JumpPair('backwards') <= 0
+        if g:tagalong_verbose &&
+              \ g:tagalong_timeout > 0 &&
+              \ reltimefloat(reltime(start_jump_time)) * 1000 >= g:tagalong_timeout
+          let b:tagalong_timeout_warning =
+                \ "Tagalong: Opening tag NOT updated, search timed out: ".tag
+        endif
         return {}
       endif
       let opening_position = getpos('.')
@@ -256,10 +275,16 @@ endfunction
 " setups, for instance
 function! s:JumpPair(direction)
   if a:direction == 'forwards'
-    let search_result = searchpair(s:opening_regex.s:opening_end_regex, '', s:closing_regex, 'W')
+    let flags = 'W'
   elseif a:direction == 'backwards'
-    let search_result = searchpair(s:opening_regex.s:opening_end_regex, '', s:closing_regex, 'bW')
+    let flags = 'bW'
+  else
+    echoerr "Unexpected direction source: " . a:direction
+    return 0
   endif
 
-  return search_result
+  let start_pattern = s:opening_regex.s:opening_end_regex
+  let end_pattern   = s:closing_regex
+
+  return searchpair(start_pattern, '', end_pattern, flags, '', 0, g:tagalong_timeout)
 endfunction
