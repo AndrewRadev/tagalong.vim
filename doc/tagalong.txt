@@ -116,7 +116,7 @@ SETTINGS                                                     *tagalong-settings*
     let g:tagalong_filetypes = ['html']
 <
 Default value: [
-    'html', 'xml', 'jsx', 'eruby', 'ejs', 'eco', 'php', 'htmldjango'
+    "html", "xml", "jsx", "eruby", "ejs", "eco", "php", "htmldjango"
 ]
 
 This variable holds all of the filetypes that the plugin will install mappings
@@ -199,8 +199,8 @@ insert mode).
 
 ==============================================================================
 INTERNALS                                                   *tagalong-internals*
-                                                            *TagalongInit*
-                                                            *TagalongDeinit*
+                                                            *:TagalongInit*
+                                                            *:TagalongDeinit*
 
 The plugin installs its mappings with the function `tagalong#Init()` which can
 be directly called with the command `:TagalongInit`. All mappings and
