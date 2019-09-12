@@ -91,7 +91,7 @@ let g:tagalong_filetypes = ['html']
 Default value:
 
 ```
-['html', 'xml', 'jsx', 'eruby', 'ejs', 'eco', 'php', 'htmldjango']
+['html', 'xml', 'jsx', 'eruby', 'ejs', 'eco', 'php', 'htmldjango', 'javascriptreact', 'typescriptreact']
 ```
 
 This variable holds all of the filetypes that the plugin will install mappings for. If, for some reason, you'd like to avoid its behaviour for particular markup languages, you can set the variable to a list of the ones you'd like to keep.
