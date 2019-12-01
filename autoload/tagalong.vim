@@ -9,12 +9,20 @@ function! tagalong#Init()
   let b:tagalong_initialized = 1
 
   for key in g:tagalong_mappings
-    let mapping = maparg(key, 'n')
-    if mapping == ''
-      let mapping = key
-    endif
+    if type(key) == type({})
+      " e.g. {'c' => '<leader>c'}
+      for [native_key, override_key] in items(key)
+        exe 'nmap <buffer><silent> '.override_key.' :call tagalong#Trigger()<cr>'.native_key
+      endfor
+    else
+      " it's just a key
+      let mapping = maparg(key, 'n')
+      if mapping == ''
+        let mapping = key
+      endif
 
-    exe 'nnoremap <buffer> <silent> '.key.' :call tagalong#Trigger()<cr>'.mapping
+      exe 'nnoremap <buffer><silent> '.key.' :call tagalong#Trigger()<cr>'.mapping
+    endif
   endfor
 
   exe 'augroup tagalong_'.bufnr('%')
