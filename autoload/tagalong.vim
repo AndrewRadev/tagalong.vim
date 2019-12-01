@@ -10,7 +10,7 @@ function! tagalong#Init()
 
   for key in g:tagalong_mappings
     if type(key) == type({})
-      " e.g. {'c' => '<leader>c'}
+      " e.g. {'c': '<leader>c'}
       for [native_key, override_key] in items(key)
         exe 'nmap <buffer><silent> '.override_key.' :call tagalong#Trigger()<cr>'.native_key
       endfor

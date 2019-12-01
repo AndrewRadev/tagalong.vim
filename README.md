@@ -117,7 +117,7 @@ Ideally, the above setting would just hold all sensible filetypes, so consider o
 Example usage:
 
 ``` vim
-let g:tagalong_mappings = ['i', 'a']
+let g:tagalong_mappings = [{'c': '_c'}, 'i', 'a']
 ```
 
 Default value: `['c', 'C', 'v', 'i', 'a']`
@@ -127,6 +127,8 @@ This setting controls which types of editing will have mappings installed for th
 Changing this variable means that editing the buffer with the removed mappings won't trigger the plugin. You could set it to `['i', 'a']` if you usually edit tags by entering insert mode and backspacing over the tag. That way, the `c` family of mappings could be remapped by some other plugin, for instance. Or you could use them to give yourself an escape hatch, if the plugin bugs out or you have good reason not to update the other tag.
 
 Note that the plugin will attempt to respect your previous mappings of any of these keys. If you have an `nnoremap c` in your `.vimrc` file, it'll be applied. Mapping `cw`, on the other hand, will likely just use your mapping, instead of hitting the plugin at all. If you're having problems with this, please open a github issue.
+
+If you want to use a special key sequence to replace a built-in, you can put a dictionary instead of a single letter in the setting. For instance, instead of `'c'`, you can put in `{'c': '_c'}`, and it would use the `_c` key sequence to act as the native `c` key with tagalong's effect. You can use that to avoid conflicts with other plugins overriding the native keys. It's generally not recommended -- the power of the plugin is that it works automatically, otherwise you could use vim-surround instead. But it's your call.
 
 If you set it to an empty list, `[]`, the plugin will not be activated by any mappings, but you can read the "Internals and Advanced Usage" section for other ways of using it.
 
