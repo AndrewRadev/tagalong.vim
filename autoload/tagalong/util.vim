@@ -210,7 +210,11 @@ function! tagalong#util#SearchposUnderCursor(pattern, ...)
 
   " set the end of the pattern to the next character, or EOL. Extra logic
   " is for multibyte characters.
+  let saved_whichwrap = &whichwrap
+  set whichwrap-=l
   normal! l
+  let &whichwrap = saved_whichwrap
+
   if col('.') == match_end[1]
     " no movement, we must be at the end
     let match_end[1] = col('$')
