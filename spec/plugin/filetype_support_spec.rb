@@ -38,16 +38,24 @@ RSpec.describe "Filetype support" do
   describe "JSX" do
     let(:filename) { 'test.jsx' }
 
-    # JSX support not built-in, so matchit support not built-in. We can't
-    # check if it really works, but we can check if the mapping is there, at
-    # least.
-    specify "has mapping" do
+    # JSX support not built-in in earlier versions, so matchit support not
+    # built-in. We can't check if it really works, but we can check if the
+    # mapping is there, at least.
+    specify "has mapping for 'javascript.jsx'" do
       set_file_contents <<~HTML
         <div>Text</div>
       HTML
 
-      expect(vim.command('map c')).not_to include('tagalong#Trigger')
       vim.set(:filetype, 'javascript.jsx')
+      expect(vim.command('map c')).to include('tagalong#Trigger')
+    end
+
+    specify "has mapping for 'javascriptreact'" do
+      set_file_contents <<~HTML
+        <div>Text</div>
+      HTML
+
+      vim.set(:filetype, 'javascriptreact')
       expect(vim.command('map c')).to include('tagalong#Trigger')
     end
   end
