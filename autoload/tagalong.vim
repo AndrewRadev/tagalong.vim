@@ -180,7 +180,7 @@ function! s:GetChangePositions()
 
       let opening_position = getpos('.')
       let start_jump_time = reltime()
-      if s:JumpPair('forwards') <= 0
+      if s:JumpPair('forwards', tag) <= 0
         if g:tagalong_verbose &&
               \ g:tagalong_timeout > 0 &&
               \ reltimefloat(reltime(start_jump_time)) * 1000 >= g:tagalong_timeout
@@ -208,7 +208,7 @@ function! s:GetChangePositions()
 
       let closing_position = getpos('.')
       let start_jump_time = reltime()
-      if s:JumpPair('backwards') <= 0
+      if s:JumpPair('backwards', tag) <= 0
         if g:tagalong_verbose &&
               \ g:tagalong_timeout > 0 &&
               \ reltimefloat(reltime(start_jump_time)) * 1000 >= g:tagalong_timeout
@@ -281,7 +281,7 @@ endfunction
 
 " Reimplements matchit, since that seems to jump to li items from ul>li
 " setups, for instance
-function! s:JumpPair(direction)
+function! s:JumpPair(direction, tag)
   if a:direction == 'forwards'
     let flags = 'W'
   elseif a:direction == 'backwards'
@@ -291,8 +291,8 @@ function! s:JumpPair(direction)
     return 0
   endif
 
-  let start_pattern = s:opening_regex.s:opening_end_regex
-  let end_pattern   = s:closing_regex
+  let start_pattern = '<\zs\V'   . a:tag . '\m' . s:opening_end_regex
+  let end_pattern   = '<\/\zs\V' . a:tag . '\m>'
 
   return searchpair(start_pattern, '', end_pattern, flags, '', 0, g:tagalong_timeout)
 endfunction
