@@ -12,7 +12,9 @@ function! tagalong#Init()
     if type(key) == type({})
       " e.g. {'c': '<leader>c'}
       for [native_key, override_key] in items(key)
-        exe 'nmap <buffer><silent> '.override_key.' :call tagalong#Trigger()<cr>'.native_key
+        " TODO (2020-04-24) Test mapping nnoremap + feedkeys without 'n'
+        exe 'nmap <buffer><silent> ' . override_key .
+              \ ' :<c-u>call tagalong#Trigger(v:count, "' . escape(native_key, '"') . '")<cr>'
       endfor
     else
       " it's just a key
@@ -21,7 +23,8 @@ function! tagalong#Init()
         let mapping = key
       endif
 
-      exe 'nnoremap <buffer><silent> '.key.' :call tagalong#Trigger()<cr>'.mapping
+      exe 'nnoremap <buffer><silent> ' . key .
+            \ ' :<c-u>call tagalong#Trigger(v:count, "' . escape(mapping, '"') . '")<cr>'
     endif
   endfor
 
@@ -46,7 +49,13 @@ function! tagalong#Deinit()
   augroup END
 endfunction
 
-function! tagalong#Trigger()
+function! tagalong#Trigger(action_count, action)
+  if a:action_count > 0
+    let mapping = a:action_count . a:action
+  else
+    let mapping = a:action
+  endif
+
   call tagalong#util#PushCursor()
 
   try
@@ -59,6 +68,7 @@ function! tagalong#Trigger()
     let b:tag_change = change
   finally
     call tagalong#util#PopCursor()
+    call feedkeys(mapping, 'ni')
   endtry
 endfunction
 
