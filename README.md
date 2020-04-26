@@ -1,3 +1,4 @@
+[![GitHub version](https://badge.fury.io/gh/andrewradev%2Ftagalong.vim.svg)](https://badge.fury.io/gh/andrewradev%2Ftagalong.vim)
 [![Build Status](https://travis-ci.org/AndrewRadev/tagalong.vim.svg?branch=master)](https://travis-ci.org/AndrewRadev/tagalong.vim)
 
 ![Tagalong](http://i.andrewradev.com/52e379b8425f731b215811c024683949.png)
