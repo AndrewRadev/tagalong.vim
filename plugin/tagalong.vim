@@ -2,7 +2,7 @@ if exists('g:loaded_tagalong') || &cp
   finish
 endif
 
-let g:loaded_tagalong = '0.2.0' " version number
+let g:loaded_tagalong = '0.2.1' " version number
 let s:keepcpo = &cpo
 set cpo&vim
 
