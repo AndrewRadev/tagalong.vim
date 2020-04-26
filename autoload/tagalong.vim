@@ -13,7 +13,7 @@ function! tagalong#Init()
       " e.g. {'c': '<leader>c'}
       for [native_key, override_key] in items(key)
         exe 'nnoremap <buffer><silent> ' . override_key .
-              \ ' :<c-u>call tagalong#Trigger(v:count, "' . escape(native_key, '"') . '")<cr>'
+              \ ' :<c-u>call tagalong#Trigger("' . escape(native_key, '"') . '", v:count)<cr>'
       endfor
     else
       " it's just a key
@@ -23,7 +23,7 @@ function! tagalong#Init()
       endif
 
       exe 'nnoremap <buffer><silent> ' . key .
-            \ ' :<c-u>call tagalong#Trigger(v:count, "' . escape(mapping, '"') . '")<cr>'
+            \ ' :<c-u>call tagalong#Trigger("' . escape(mapping, '"') . '", v:count)<cr>'
     endif
   endfor
 
@@ -48,12 +48,27 @@ function! tagalong#Deinit()
   augroup END
 endfunction
 
-function! tagalong#Trigger(action_count, action)
-  if a:action_count > 0
-    let mapping = a:action_count . a:action
+" Can be invoked in two main ways:
+"
+"   call tagalong#Trigger()
+"   call tagalong#Trigger('<mapping>', '<count>')
+"
+" The first method will prepare a change to a matching tag once
+" `tagalong#Apply` is invoked. The second will *also* run the mapping with the
+" given count.
+"
+" The built-in mapping uses the second method, but the first could be used for
+" more complicated changes.
+"
+function! tagalong#Trigger(...)
+  let action       = a:0 >= 1 ? a:1 : ""
+  let repeat_count = a:0 >= 2 ? a:2 : 0
+
+  if repeat_count > 0
+    let mapping = repeat_count . action
   else
-    let mapping = a:action
-  endif
+    let mapping = action
+  end
 
   call tagalong#util#PushCursor()
 
@@ -67,10 +82,16 @@ function! tagalong#Trigger(action_count, action)
     let b:tag_change = change
   finally
     call tagalong#util#PopCursor()
-    call feedkeys(mapping, 'ni')
+
+    if mapping != ''
+      call feedkeys(mapping, 'ni')
+    endif
   endtry
 endfunction
 
+" If a tag change has already been prepared with `tagalong#Trigger`, apply it
+" to the matching tag.
+"
 function! tagalong#Apply()
   if exists('b:tagalong_timeout_warning')
     echomsg b:tagalong_timeout_warning
@@ -117,6 +138,8 @@ function! tagalong#Apply()
   endtry
 endfunction
 
+" Repeat the last tag change in a different location.
+"
 function! tagalong#Reapply()
   if !exists('b:last_tag_change')
     normal! .

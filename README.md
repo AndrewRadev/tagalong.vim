@@ -46,12 +46,11 @@ The plugin installs its mappings with the function `tagalong#Init()`. All mappin
 
 All the mappings (currently) do the following:
 
-- Call the `tagalong#Trigger()` function. It stores information about the tag under the cursor in a buffer-local variable.
-- Execute the original mapping.
+- Call the `tagalong#Trigger(<mapping>, <count>)` function. It stores information about the tag under the cursor in a buffer-local variable and executes the original mapping.
 - Upon exiting insert mode (see [`:help InsertLeave`](http://vimhelp.appspot.com/autocmd.txt.html#InsertLeave)), the function `tagalong#Apply()` gets called, takes the stored tag information and gets the changed tag and applies the change to both opening and closing tag
 - The `tagalong#Reapply()` function can be invoked by vim-repeat, or it can be invoked manually, to perform the previous tag change.
 
-So, if you wanted to make pasting over a tag activate the plugin, it might work like this:
+The initial function, `tagalong#Trigger`, can also be invoked with no arguments, which means it will only store tag information to prepare `tagalong#Apply()`. This allows you to do something more complicated between the two calls. For example, if you wanted to make pasting over a tag activate the plugin, it might work like this:
 
 ``` vim
 " The `<c-u>` removes the current visual mode, so a function can be called
