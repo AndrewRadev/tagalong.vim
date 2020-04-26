@@ -12,8 +12,7 @@ function! tagalong#Init()
     if type(key) == type({})
       " e.g. {'c': '<leader>c'}
       for [native_key, override_key] in items(key)
-        " TODO (2020-04-24) Test mapping nnoremap + feedkeys without 'n'
-        exe 'nmap <buffer><silent> ' . override_key .
+        exe 'nnoremap <buffer><silent> ' . override_key .
               \ ' :<c-u>call tagalong#Trigger(v:count, "' . escape(native_key, '"') . '")<cr>'
       endfor
     else

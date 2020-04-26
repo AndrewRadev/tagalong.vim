@@ -46,7 +46,7 @@ RSpec.describe "Custom mappings" do
     vim.command("nnoremap <buffer><expr> c 'd'")
 
     vim.search('<div')
-    edit('lcw')
+    edit('lcwl')
 
     # No change to buffer, because native c has been remapped
     assert_file_contents <<~HTML
