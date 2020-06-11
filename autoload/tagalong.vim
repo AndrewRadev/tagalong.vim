@@ -177,7 +177,7 @@ function! tagalong#Reapply()
       let new_opening = tagalong#util#GetMotion('va>')
       let new_tag     = matchstr(new_opening, s:opening_regex)
 
-      if old_tag == new_tag
+      if old_tag ==# new_tag
         " then there's nothing else to do
         silent! call repeat#set("\<Plug>TagalongReapply")
         return
@@ -297,7 +297,7 @@ function! s:FillChangeContents(change)
     return {}
   endif
 
-  if new_tag == change.old_tag
+  if new_tag ==# change.old_tag
     " nothing to change
     call tagalong#util#PopCursor()
     return {}
