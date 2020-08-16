@@ -14,6 +14,10 @@ if !exists('g:tagalong_additional_filetypes')
   let g:tagalong_additional_filetypes = []
 endif
 
+if !exists('g:tagalong_excluded_filetype_combinations')
+  let g:tagalong_excluded_filetype_combinations = ['eruby.yaml']
+endif
+
 if !exists('g:tagalong_mappings')
   let g:tagalong_mappings = ['c', 'C', 'v', 'i', 'a']
 endif
@@ -41,9 +45,25 @@ nnoremap <silent> <Plug>TagalongReapply :call tagalong#Reapply()<cr>
 " Needed in order to handle dot-filetypes like "javascript.jsx" or
 " "custom.html".
 function s:InitIfSupportedFiletype(filetype_string)
-  for filetype in split(a:filetype_string, '\.')
-    if index(g:tagalong_filetypes, filetype) >= 0 ||
-          \ index(g:tagalong_additional_filetypes, filetype) >= 0
+  let filetypes = split(a:filetype_string, '\.')
+  call sort(filetypes)
+
+  " first, check for exclusion:
+  for filetype_string in g:tagalong_excluded_filetype_combinations
+    let excluded_filetypes = split(filetype_string, '\.')
+    call sort(excluded_filetypes)
+
+    if filetypes == excluded_filetypes
+      return
+    endif
+  endfor
+
+  " if it's not explicitly excluded, check if it's supported:
+  let included_filetypes = copy(g:tagalong_filetypes)
+  call extend(included_filetypes, g:tagalong_additional_filetypes)
+
+  for filetype in filetypes
+    if index(included_filetypes, filetype) >= 0
       call tagalong#Init()
       return
     endif

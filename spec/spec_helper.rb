@@ -18,6 +18,11 @@ end
 RSpec.configure do |config|
   config.include Support::Vim
 
+  config.before :each do
+    # Reset to default plugin settings
+    vim.command('let g:tagalong_excluded_filetype_combinations = ["eruby.yaml"]')
+  end
+
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
   end

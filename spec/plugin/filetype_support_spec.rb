@@ -136,4 +136,24 @@ RSpec.describe "Filetype support" do
       HTML
     end
   end
+
+  describe "excluding filetypes" do
+    let(:filename) { 'test.html' }
+
+    specify "allows excluding filetypes with a setting" do
+      vim.command('let g:tagalong_excluded_filetype_combinations = ["html"]')
+
+      set_file_contents <<~HTML
+        <div>Text</div>
+      HTML
+
+      vim.search('div')
+      edit('cwspan')
+
+      # Doesn't work anymore
+      assert_file_contents <<~HTML
+        <span>Text</div>
+      HTML
+    end
+  end
 end

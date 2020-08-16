@@ -102,6 +102,8 @@ If you set it to an empty list, `[]`, the plugin will not be automatically insta
 
 ### `g:tagalong_additional_filetypes`
 
+Example usage:
+
 ``` vim
 let g:tagalong_additional_filetypes = ['custom', 'another']
 ```
@@ -111,6 +113,22 @@ Default value: `[]`
 The plugin should work with any HTML-like tags, so if a compatible filetype is missing in `g:tagalong_filetypes`, you can add it here. Or you can call the `tagalong#Init()` function in your buffer.
 
 Ideally, the above setting would just hold all sensible filetypes, so consider opening a github issue to suggest one that you feel is missing. As long as it's not something too custom, I would likely be okay with adding it to the built-in list.
+
+### `g:tagalong_excluded_filetype_combinations`
+
+Example usage:
+
+``` vim
+let g:tagalong_excluded_filetype_combinations = ['custom.html']
+```
+
+Default value: `['eruby.yaml']`
+
+This setting allows the exclusion of particular filetype dot-combinations from initialization. The "filetypes" setting includes single filetypes, so any combination of them including, for instance, "html" would activate the plugin. So you could set custom filetypes like "html.rails" or something and it would still work.
+
+That said, there are combinations that are not HTML-like. The current default value of the setting, "eruby.yaml" is a good example -- it's being set by vim-rails, but there's no HTML to edit in there.
+
+It's recommended to leave this setting untouched, but you could use it as an escape hatch. If you have any problems with a particular filetype that are solved by an entry in this setting, consider opening an issue to make a change to the defaults.
 
 ### `g:tagalong_mappings`
 
