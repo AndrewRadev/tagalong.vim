@@ -45,6 +45,11 @@ nnoremap <silent> <Plug>TagalongReapply :call tagalong#Reapply()<cr>
 " Needed in order to handle dot-filetypes like "javascript.jsx" or
 " "custom.html".
 function s:InitIfSupportedFiletype(filetype_string)
+  " Exit early if we've already initialized in this buffer
+  if exists('b:tagalong_initialized')
+    return
+  endif
+
   let filetypes = split(a:filetype_string, '\.')
   call sort(filetypes)
 
