@@ -124,11 +124,10 @@ RSpec.describe "Filetype support" do
     let(:filename) { 'test.vue' }
 
     specify "works" do
-      vim.set 'filetype', 'vue'
-
       set_file_contents <<~HTML
         <div>Text</div>
       HTML
+      vim.set 'filetype', 'vue'
 
       vim.search('div')
       edit('cwarticle')
