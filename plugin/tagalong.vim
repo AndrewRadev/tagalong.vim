@@ -17,6 +17,7 @@ if !exists('g:tagalong_filetypes')
         \ 'jsx',
         \ 'php',
         \ 'typescriptreact',
+        \ 'vue',
         \ 'xml',
         \ ]
 endif
