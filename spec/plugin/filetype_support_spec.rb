@@ -124,6 +124,8 @@ RSpec.describe "Filetype support" do
     let(:filename) { 'test.vue' }
 
     specify "works" do
+      vim.set 'filetype', 'vue'
+
       set_file_contents <<~HTML
         <div>Text</div>
       HTML
@@ -133,19 +135,6 @@ RSpec.describe "Filetype support" do
 
       assert_file_contents <<~HTML
         <article>Text</article>
-      HTML
-    end
-
-    specify "doesn't affect templating" do
-      set_file_contents <<~HTML
-        <div class="<?= class_list ?>">Text</div>
-      HTML
-
-      vim.search('class_list')
-      edit('cwlist_of_classes')
-
-      assert_file_contents <<~HTML
-        <div class="<?= list_of_classes ?>">Text</div>
       HTML
     end
   end
