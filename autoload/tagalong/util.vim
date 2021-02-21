@@ -94,7 +94,7 @@ function! tagalong#util#GetMotion(motion)
   let saved_closing_visual = getpos("'>")
 
   let @z = ''
-  exec 'silent normal! '.a:motion.'"zy'
+  exec 'silent noautocmd normal! '.a:motion.'"zy'
   let text = @z
 
   if text == ''
