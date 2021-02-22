@@ -59,6 +59,8 @@ function! tagalong#util#ReplaceMotion(motion, text)
   " reset clipboard to avoid problems with 'unnamed' and 'autoselect'
   let saved_clipboard = &clipboard
   set clipboard=
+  let saved_selection = &selection
+  let &selection = "inclusive"
 
   let saved_register_text = getreg('"', 1)
   let saved_register_type = getregtype('"')
@@ -71,7 +73,9 @@ function! tagalong#util#ReplaceMotion(motion, text)
   call setreg('"', saved_register_text, saved_register_type)
   call setpos("'<", saved_opening_visual)
   call setpos("'>", saved_closing_visual)
+
   let &clipboard = saved_clipboard
+  let &selection = saved_selection
 endfunction
 
 " Text retrieval {{{1
