@@ -8,10 +8,17 @@ function! tagalong#Init()
   endif
   let b:tagalong_initialized = 1
 
+  let mapping_pattern = '^:<C-U>call tagalong#Trigger('
+
   for key in g:tagalong_mappings
     if type(key) == type({})
       " e.g. {'c': '<leader>c'}
       for [native_key, override_key] in items(key)
+        if maparg(override_key, 'n') =~ mapping_pattern
+          " we've already installed this mapping (somehow)
+          continue
+        endif
+
         exe 'nnoremap <buffer><silent> ' . override_key .
               \ ' :<c-u>call tagalong#Trigger("' . escape(native_key, '"') . '", v:count)<cr>'
       endfor
@@ -20,6 +27,11 @@ function! tagalong#Init()
       let mapping = maparg(key, 'n')
       if mapping == ''
         let mapping = key
+      endif
+
+      if mapping =~ mapping_pattern
+        " we've already installed this mapping (somehow)
+        continue
       endif
 
       exe 'nnoremap <buffer><silent> ' . key .
