@@ -11,6 +11,7 @@ if !exists('g:tagalong_filetypes')
         \ 'eco',
         \ 'ejs',
         \ 'eruby',
+        \ 'gohtmltmpl',
         \ 'html',
         \ 'htmldjango',
         \ 'javascriptreact',
