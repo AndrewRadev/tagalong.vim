@@ -74,6 +74,7 @@ A few examples of making a change that WON'T trigger the plugin:
 - Using the `:substitute` command, for instance `:%s/<div /<span /g`.
 - Yanking some text and pasting it over.
 - Using the `r` or `x` mappings to change/delete one character.
+- Entering insert mode outside of the tag, navigating to it and changing it.
 
 Some of these might be implemented at a later time, but others might be too
 difficult or too invasive. If you often use a method that doesn't trigger the
