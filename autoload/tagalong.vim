@@ -29,6 +29,12 @@ function! tagalong#Init()
         let mapping = key
       endif
 
+      if tolower(mapping) =~ '^<cmd>'
+        " A neovim-specific special "key" which we can't quite invoke like
+        " this, so let's not.
+        let mapping = key
+      endif
+
       if mapping =~ mapping_pattern
         " we've already installed this mapping (somehow)
         continue
