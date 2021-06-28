@@ -71,4 +71,25 @@ RSpec.describe "Special tags" do
       </Util.OtherStuff>
     HTML
   end
+
+  specify "opening tag split into multiple lines" do
+    set_file_contents <<~HTML
+      <MultiTag
+        foo={bar}
+        nested={<Nested />}>
+        content
+      </MultiTag>
+    HTML
+
+    vim.search('<\zsMultiTag')
+    edit('cwChangedTag')
+
+    assert_file_contents <<~HTML
+      <ChangedTag
+        foo={bar}
+        nested={<Nested />}>
+        content
+      </ChangedTag>
+    HTML
+  end
 end
