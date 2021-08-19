@@ -1,6 +1,9 @@
 let s:opening_regex = '<\zs\k[^>/[:space:]]*'
 let s:closing_regex = '<\/\zs\k[^>[:space:]]*\ze>'
 
+let s:jsx_fragment_opening_regex = '<\zs>'
+let s:jsx_fragment_closing_regex = '</\zs>'
+
 " Either the closing > of an opening tag, or the end of a line
 let s:opening_end_regex = '\%(\%(\_[^>]\{-}\_[^\/]\=>\)\)'
 
@@ -233,12 +236,7 @@ function! s:GetChangePositions()
       let opening_position = getpos('.')
       let start_jump_time = reltime()
       if s:JumpPair('forwards', tag) <= 0
-        if g:tagalong_verbose &&
-              \ g:tagalong_timeout > 0 &&
-              \ reltimefloat(reltime(start_jump_time)) * 1000 >= g:tagalong_timeout
-          let b:tagalong_timeout_warning =
-                \ "Tagalong: Closing tag NOT updated, search timed out: ".tag
-        endif
+        call s:CheckTimeout(start_jump_time, tag)
         return {}
       endif
       let closing_position = getpos('.')
@@ -261,12 +259,7 @@ function! s:GetChangePositions()
       let closing_position = getpos('.')
       let start_jump_time = reltime()
       if s:JumpPair('backwards', tag) <= 0
-        if g:tagalong_verbose &&
-              \ g:tagalong_timeout > 0 &&
-              \ reltimefloat(reltime(start_jump_time)) * 1000 >= g:tagalong_timeout
-          let b:tagalong_timeout_warning =
-                \ "Tagalong: Opening tag NOT updated, search timed out: ".tag
-        endif
+        call s:CheckTimeout(start_jump_time, tag)
         return {}
       endif
       let opening_position = getpos('.')
@@ -275,6 +268,49 @@ function! s:GetChangePositions()
         return {
               \ 'source':           'closing',
               \ 'old_tag':          tag,
+              \ 'opening_position': opening_position,
+              \ 'closing_position': closing_position,
+              \ }
+      endif
+    elseif tagalong#util#SearchUnderCursor(s:jsx_fragment_opening_regex)
+      " We are on the <> of a JSX fragment
+      let opening_position = getpos('.')
+
+      let start_jump_time = reltime()
+      if searchpair(
+            \ s:jsx_fragment_opening_regex, '', s:jsx_fragment_closing_regex,
+            \ 'W', '', 0, g:tagalong_timeout
+            \ ) <= 0
+        call s:CheckTimeout(start_jump_time, '<>')
+        return {}
+      endif
+      let closing_position = getpos('.')
+
+      if opening_position != closing_position && tagalong#util#SearchUnderCursor('</>', 'n')
+        return {
+              \ 'source':           'opening',
+              \ 'old_tag':          '',
+              \ 'opening_position': opening_position,
+              \ 'closing_position': closing_position,
+              \ }
+      endif
+    elseif tagalong#util#SearchUnderCursor(s:jsx_fragment_closing_regex)
+      " We are on the closing </> of a JSX fragment
+      let closing_position = getpos('.')
+      let start_jump_time = reltime()
+      if searchpair(
+            \ s:jsx_fragment_opening_regex, '', s:jsx_fragment_closing_regex,
+            \ 'bW', '', 0, g:tagalong_timeout
+            \ ) <= 0
+        call s:CheckTimeout(start_jump_time, '</>')
+        return {}
+      endif
+      let opening_position = getpos('.')
+
+      if opening_position != closing_position && tagalong#util#SearchUnderCursor('<>', 'n')
+        return {
+              \ 'source':           'closing',
+              \ 'old_tag':          '',
               \ 'opening_position': opening_position,
               \ 'closing_position': closing_position,
               \ }
@@ -304,7 +340,13 @@ function! s:FillChangeContents(change)
 
     call setpos('.', change.opening_position)
     let new_opening = tagalong#util#GetMotion('va>')
-    let new_opening = substitute(new_opening, s:opening_regex, new_tag, '')
+
+    if new_opening == '<>'
+      " special handling for empty JSX tag
+      let new_opening = '<' . new_tag . '>'
+    else
+      let new_opening = substitute(new_opening, s:opening_regex, new_tag, '')
+    endif
   else
     echoerr "Unexpected tag change source: " . change.source
     return
@@ -347,4 +389,13 @@ function! s:JumpPair(direction, tag)
   let end_pattern   = '<\/\zs\V' . a:tag . '\m>'
 
   return searchpair(start_pattern, '', end_pattern, flags, '', 0, g:tagalong_timeout)
+endfunction
+
+function! s:CheckTimeout(start_jump_time, tag)
+  if g:tagalong_verbose &&
+        \ g:tagalong_timeout > 0 &&
+        \ reltimefloat(reltime(a:start_jump_time)) * 1000 >= g:tagalong_timeout
+    let b:tagalong_timeout_warning =
+          \ "Tagalong: Opening tag NOT updated, search timed out: ".a:tag
+  endif
 endfunction
