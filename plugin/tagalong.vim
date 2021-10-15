@@ -20,6 +20,7 @@ if !exists('g:tagalong_filetypes')
         \ 'typescriptreact',
         \ 'vue',
         \ 'xml',
+        \ 'eelixir',
         \ ]
 endif
 
