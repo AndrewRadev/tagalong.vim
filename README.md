@@ -1,5 +1,5 @@
 [![GitHub version](https://badge.fury.io/gh/andrewradev%2Ftagalong.vim.svg)](https://badge.fury.io/gh/andrewradev%2Ftagalong.vim)
-[![Build Status](https://travis-ci.org/AndrewRadev/tagalong.vim.svg?branch=master)](https://travis-ci.org/AndrewRadev/tagalong.vim)
+[![Build Status](https://circleci.com/gh/AndrewRadev/tagalong.vim/tree/main.svg?style=shield)](https://circleci.com/gh/AndrewRadev/tagalong.vim?branch=main)
 
 ![Tagalong](http://i.andrewradev.com/52e379b8425f731b215811c024683949.png)
 
