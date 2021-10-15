@@ -9,6 +9,7 @@ set cpo&vim
 if !exists('g:tagalong_filetypes')
   let g:tagalong_filetypes = [
         \ 'eco',
+        \ 'eelixir',
         \ 'ejs',
         \ 'eruby',
         \ 'gohtmltmpl',
@@ -20,7 +21,6 @@ if !exists('g:tagalong_filetypes')
         \ 'typescriptreact',
         \ 'vue',
         \ 'xml',
-        \ 'eelixir',
         \ ]
 endif
 

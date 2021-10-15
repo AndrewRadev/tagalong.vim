@@ -117,7 +117,9 @@ SETTINGS                                                     *tagalong-settings*
     let g:tagalong_filetypes = ['html']
 <
 Default value: [
-    "html", "xml", "jsx", "eruby", "ejs", "eco", "php", "htmldjango"
+    "eco", "eelixir", "ejs", "eruby",
+    "html", "htmldjango", "javascriptreact", "jsx",
+    "php", "typescriptreact", "xml"
 ]
 
 This variable holds all of the filetypes that the plugin will install mappings
