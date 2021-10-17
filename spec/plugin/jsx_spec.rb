@@ -4,7 +4,7 @@ RSpec.describe "JSX" do
   let(:filename) { 'test.jsx' }
 
   specify "Editing a <> react fragment" do
-    pending "Old version on CircleCI" if ENV['CIRCLE_CI']
+    pending "Old Vim version on CI" if ENV['CI']
 
     set_file_contents <<~HTML
       <>
@@ -23,7 +23,7 @@ RSpec.describe "JSX" do
   end
 
   specify "Editing a </> react fragment" do
-    pending "Old version on CircleCI" if ENV['CIRCLE_CI']
+    pending "Old Vim version on CI" if ENV['CI']
 
     set_file_contents <<~HTML
       <>
