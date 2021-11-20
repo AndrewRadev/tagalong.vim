@@ -42,8 +42,6 @@ RSpec.describe "JSX" do
   end
 
   specify "Ignoring self-closing components" do
-    pending "Old Vim version on CI" if ENV['CI']
-
     set_file_contents <<~HTML
       <Example>
         <Example />
