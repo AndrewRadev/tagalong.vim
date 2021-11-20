@@ -231,7 +231,13 @@ function! s:GetChangePositions()
   try
     if tagalong#util#SearchUnderCursor(s:opening_regex.s:opening_end_regex)
       " We are on an opening tag
-      let tag = matchstr(tagalong#util#GetMotion('va>'), s:opening_regex)
+      let full_tag = tagalong#util#GetMotion('va>')
+      if full_tag =~ '/>$'
+        " it's self-closing, ignore it
+        return {}
+      endif
+
+      let tag = matchstr(full_tag, s:opening_regex)
 
       let opening_position = getpos('.')
       let start_jump_time = reltime()

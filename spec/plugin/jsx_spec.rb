@@ -40,4 +40,23 @@ RSpec.describe "JSX" do
       </Foo.Bar>
     HTML
   end
+
+  specify "Ignoring self-closing components" do
+    pending "Old Vim version on CI" if ENV['CI']
+
+    set_file_contents <<~HTML
+      <Example>
+        <Example />
+      </Example>
+    HTML
+
+    vim.search('<\zsExample />')
+    edit('cwChanged')
+
+    assert_file_contents <<~HTML
+      <Example>
+        <Changed />
+      </Example>
+    HTML
+  end
 end
