@@ -139,7 +139,7 @@ Example usage:
 let g:tagalong_mappings = [{'c': '_c'}, 'i', 'a']
 ```
 
-Default value: `['c', 'C', 'v', 'i', 'a']`
+Default value: `['c', 'C', 'v', 'i', 'a', 'A']`
 
 This setting controls which types of editing will have mappings installed for them. Currently, these are literal mappings -- each character in the list is a mapping that you can see by executing `:nmap c`, for instance. But it's not necessary to be the case -- in the future, the values in the list might be labels of some sort that will be explained in more detail in the documentation.
 
