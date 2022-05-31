@@ -35,8 +35,7 @@ function! tagalong#Init()
       endif
 
       if tolower(mapping) =~ '^<cmd>'
-        " A neovim-specific special "key" which we can't quite invoke like
-        " this, so let's not.
+        " A special "key" which we can't quite invoke like this, so let's not.
         let mapping = key
       endif
 
