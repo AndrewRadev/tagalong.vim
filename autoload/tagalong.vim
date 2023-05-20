@@ -133,10 +133,16 @@ function! tagalong#Apply()
       return
     endif
 
-    silent undo
+    " Reposition the closing position in case things have moved around under us:
+    if change.source == 'opening' && change.opening_end_line > 0
+      let current_opening_end = tagalong#util#SearchposUnderCursor(s:opening_regex.s:opening_end_regex, 'ne')
+      let current_closing_position = s:UpdateClosingPosition(change, current_opening_end)
+    else
+      let current_closing_position = change.closing_position
+    endif
 
-    " First the closing, in case the length changes:
-    call setpos('.', change.closing_position)
+    " Update the closing tag
+    call setpos('.', current_closing_position)
     call tagalong#util#ReplaceMotion('va>', change.new_closing)
 
     " Then the opening tag:
@@ -239,6 +245,8 @@ function! s:GetChangePositions()
       let tag = matchstr(full_tag, s:opening_regex)
 
       let opening_position = getpos('.')
+      let opening_end = tagalong#util#SearchposUnderCursor(s:opening_regex.s:opening_end_regex, 'ne')
+
       let start_jump_time = reltime()
       if s:JumpPair('forwards', tag) <= 0
         call s:CheckTimeout(start_jump_time, tag)
@@ -255,6 +263,8 @@ function! s:GetChangePositions()
               \ 'old_tag':          tag,
               \ 'opening_position': opening_position,
               \ 'closing_position': closing_position,
+              \ 'opening_end_line': opening_end[0],
+              \ 'opening_end_col':  opening_end[1],
               \ }
       endif
     elseif tagalong#util#SearchUnderCursor(s:closing_regex)
@@ -275,6 +285,8 @@ function! s:GetChangePositions()
               \ 'old_tag':          tag,
               \ 'opening_position': opening_position,
               \ 'closing_position': closing_position,
+              \ 'opening_end_line': -1,
+              \ 'opening_end_col':  -1,
               \ }
       endif
     elseif tagalong#util#SearchUnderCursor(s:jsx_fragment_opening_regex)
@@ -297,6 +309,8 @@ function! s:GetChangePositions()
               \ 'old_tag':          '',
               \ 'opening_position': opening_position,
               \ 'closing_position': closing_position,
+              \ 'opening_end_line': opening_position[1],
+              \ 'opening_end_col':  opening_position[2],
               \ }
       endif
     elseif tagalong#util#SearchUnderCursor(s:jsx_fragment_closing_regex)
@@ -318,6 +332,8 @@ function! s:GetChangePositions()
               \ 'old_tag':          '',
               \ 'opening_position': opening_position,
               \ 'closing_position': closing_position,
+              \ 'opening_end_line': -1,
+              \ 'opening_end_col':  -1,
               \ }
       endif
     endif
@@ -403,4 +419,18 @@ function! s:CheckTimeout(start_jump_time, tag)
     let b:tagalong_timeout_warning =
           \ "Tagalong: Opening tag NOT updated, search timed out: ".a:tag
   endif
+endfunction
+
+function s:UpdateClosingPosition(change, new_opening_end)
+  let closing_position = copy(a:change.closing_position)
+
+  " If the lines have been moved, we always want to update them
+  let closing_position[1] += a:new_opening_end[0] - a:change.opening_end_line
+
+  if closing_position[1] == a:change.opening_end_line
+    " The closing tag was on the same line, it might have changed columns
+    let closing_position[2] += a:new_opening_end[1] - a:change.opening_end_col
+  endif
+
+  return closing_position
 endfunction

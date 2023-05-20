@@ -239,7 +239,11 @@ function! tagalong#util#SearchposUnderCursor(pattern, ...)
       call tagalong#util#DropCursor()
     endif
 
-    return match_start
+    if stridx(given_flags, 'e') >= 0
+      return match_end
+    else
+      return match_start
+    endif
   endif
 endfunction
 

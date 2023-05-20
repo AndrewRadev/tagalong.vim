@@ -63,7 +63,7 @@ RSpec.describe "Special tags" do
     HTML
 
     vim.search('<\/\zsMyComponents')
-    edit('cWUtil.OtherStuff>')
+    edit('ci>/Util.OtherStuff')
 
     assert_file_contents <<~HTML
       <Util.OtherStuff color="blue">
