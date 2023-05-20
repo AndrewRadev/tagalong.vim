@@ -355,11 +355,11 @@ function! s:FillChangeContents(change)
 
   if change.source == 'opening'
     let new_opening = tagalong#util#GetMotion('va>')
-    let new_tag     = matchstr(new_opening, '^<\zs[^>[:space:]]\+')
+    let new_tag     = matchstr(new_opening, '^<\zs\%(\k[^>/[:space:]]*\|>\)')
     let new_closing = '</'.new_tag.'>'
   elseif change.source == 'closing'
     let new_closing = tagalong#util#GetMotion('va>')
-    let new_tag     = matchstr(new_closing, '^<\/\zs[^>[:space:]]\+')
+    let new_tag     = matchstr(new_closing, '^<\/\zs\k[^>[:space:]]\+')
 
     call setpos('.', change.opening_position)
     let new_opening = tagalong#util#GetMotion('va>')
