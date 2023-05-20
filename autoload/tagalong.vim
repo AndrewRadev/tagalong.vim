@@ -136,10 +136,19 @@ function! tagalong#Apply()
     " Reposition in case lines have moved around under us:
     if change.source == 'opening' && change.opening_end_line > 0
       let current_opening_start = tagalong#util#SearchposUnderCursor(s:opening_regex.s:opening_end_regex, 'nc')
-      let current_opening_end = tagalong#util#SearchposUnderCursor(s:opening_regex.s:opening_end_regex, 'nce')
+      let current_opening_end   = tagalong#util#SearchposUnderCursor(s:opening_regex.s:opening_end_regex, 'nce')
 
       let current_opening_position = s:UpdateOpeningPosition(change, current_opening_start)
       let current_closing_position = s:UpdateClosingPosition(change, current_opening_end)
+    elseif change.source == 'closing'
+      let current_opening_position = copy(change.opening_position)
+      let current_closing_position = copy(change.closing_position)
+
+      let current_closing_start = tagalong#util#SearchposUnderCursor(s:closing_regex, 'nc')
+
+      let current_opening_position[1] += current_closing_start[0] - current_closing_position[1]
+      let current_closing_position[1] = current_closing_start[0]
+      let current_closing_position[2] = current_closing_start[1]
     else
       let current_opening_position = change.opening_position
       let current_closing_position = change.closing_position
