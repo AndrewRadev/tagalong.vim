@@ -133,11 +133,15 @@ function! tagalong#Apply()
       return
     endif
 
-    " Reposition the closing position in case things have moved around under us:
+    " Reposition in case lines have moved around under us:
     if change.source == 'opening' && change.opening_end_line > 0
-      let current_opening_end = tagalong#util#SearchposUnderCursor(s:opening_regex.s:opening_end_regex, 'ne')
+      let current_opening_start = tagalong#util#SearchposUnderCursor(s:opening_regex.s:opening_end_regex, 'nc')
+      let current_opening_end = tagalong#util#SearchposUnderCursor(s:opening_regex.s:opening_end_regex, 'nce')
+
+      let current_opening_position = s:UpdateOpeningPosition(change, current_opening_start)
       let current_closing_position = s:UpdateClosingPosition(change, current_opening_end)
     else
+      let current_opening_position = change.opening_position
       let current_closing_position = change.closing_position
     endif
 
@@ -146,7 +150,7 @@ function! tagalong#Apply()
     call tagalong#util#ReplaceMotion('va>', change.new_closing)
 
     " Then the opening tag:
-    call setpos('.', change.opening_position)
+    call setpos('.', current_opening_position)
     call tagalong#util#ReplaceMotion('va>', change.new_opening)
 
     silent! call repeat#set("\<Plug>TagalongReapply")
@@ -350,12 +354,10 @@ function! s:FillChangeContents(change)
   call tagalong#util#PushCursor()
 
   if change.source == 'opening'
-    call setpos('.', change.opening_position)
     let new_opening = tagalong#util#GetMotion('va>')
     let new_tag     = matchstr(new_opening, '^<\zs[^>[:space:]]\+')
     let new_closing = '</'.new_tag.'>'
   elseif change.source == 'closing'
-    call setpos('.', change.closing_position)
     let new_closing = tagalong#util#GetMotion('va>')
     let new_tag     = matchstr(new_closing, '^<\/\zs[^>[:space:]]\+')
 
@@ -421,14 +423,23 @@ function! s:CheckTimeout(start_jump_time, tag)
   endif
 endfunction
 
+function s:UpdateOpeningPosition(change, new_opening_start)
+  let opening_position = copy(a:change.closing_position)
+  let opening_position[1] = a:new_opening_start[0]
+  let opening_position[2] = a:new_opening_start[1]
+
+  return opening_position
+endfunction
+
 function s:UpdateClosingPosition(change, new_opening_end)
   let closing_position = copy(a:change.closing_position)
 
   " If the lines have been moved, we always want to update them
   let closing_position[1] += a:new_opening_end[0] - a:change.opening_end_line
 
-  if closing_position[1] == a:change.opening_end_line
-    " The closing tag was on the same line, it might have changed columns
+  if closing_position[1] == a:new_opening_end[0]
+    " The closing tag is on the same line as the end of the opening one, it
+    " might have changed columns
     let closing_position[2] += a:new_opening_end[1] - a:change.opening_end_col
   endif
 
