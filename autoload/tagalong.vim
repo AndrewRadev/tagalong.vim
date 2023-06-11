@@ -133,7 +133,7 @@ function! tagalong#Apply()
       return
     endif
 
-    " Update the closing tag
+    " First the closing, in case the length changes:
     call setpos('.', change.closing_position)
     call tagalong#util#ReplaceMotion('va>', change.new_closing)
 
