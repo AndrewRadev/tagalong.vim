@@ -382,22 +382,31 @@ function! s:UpdateChangeBeforeApplying(change)
 
   call tagalong#util#PopCursor()
 
-  " Reposition in case lines have moved around under us:
+  " Reposition in case lines have moved around above us (automatic imports):
+  "
   if change.source == 'opening' && change.opening_end_line > 0
-    let current_opening_start = tagalong#util#SearchposUnderCursor(s:opening_regex.s:opening_end_regex, 'nc')
-    let current_opening_end   = tagalong#util#SearchposUnderCursor(s:opening_regex.s:opening_end_regex, 'nce')
+    let new_opening_start = tagalong#util#SearchposUnderCursor(s:opening_regex.s:opening_end_regex, 'nc')
+    let new_opening_end   = tagalong#util#SearchposUnderCursor(s:opening_regex.s:opening_end_regex, 'nce')
 
-    let change.opening_position = s:UpdateOpeningPosition(change, current_opening_start)
-    let change.closing_position = s:UpdateClosingPosition(change, current_opening_end)
+    let change.opening_position[1] = new_opening_start[0]
+    let change.opening_position[2] = new_opening_start[1]
+
+    " If any lines have been moved for the opening's end, we always want to
+    " update the closing line
+    let change.closing_position[1] += new_opening_end[0] - change.opening_end_line
+
+    if change.closing_position[1] == new_opening_end[0]
+      " The closing tag is on the same line as the end of the opening one, so
+      " it might have changed columns
+      let change.closing_position[2] += new_opening_end[1] - a:change.opening_end_col
+    endif
   elseif change.source == 'closing'
-    let current_opening_position = copy(change.opening_position)
-    let current_closing_position = copy(change.closing_position)
+    let new_closing_start = tagalong#util#SearchposUnderCursor(s:closing_regex, 'nc')
 
-    let current_closing_start = tagalong#util#SearchposUnderCursor(s:closing_regex, 'nc')
+    let change.opening_position[1] += new_closing_start[0] - change.closing_position[1]
 
-    let change.opening_position[1] += current_closing_start[0] - current_closing_position[1]
-    let change.closing_position[1] = current_closing_start[0]
-    let change.closing_position[2] = current_closing_start[1]
+    let change.closing_position[1] = new_closing_start[0]
+    let change.closing_position[2] = new_closing_start[1]
   endif
 
   return change
@@ -428,27 +437,4 @@ function! s:CheckTimeout(start_jump_time, tag)
     let b:tagalong_timeout_warning =
           \ "Tagalong: Opening tag NOT updated, search timed out: ".a:tag
   endif
-endfunction
-
-function s:UpdateOpeningPosition(change, new_opening_start)
-  let opening_position = copy(a:change.closing_position)
-  let opening_position[1] = a:new_opening_start[0]
-  let opening_position[2] = a:new_opening_start[1]
-
-  return opening_position
-endfunction
-
-function s:UpdateClosingPosition(change, new_opening_end)
-  let closing_position = copy(a:change.closing_position)
-
-  " If the lines have been moved, we always want to update them
-  let closing_position[1] += a:new_opening_end[0] - a:change.opening_end_line
-
-  if closing_position[1] == a:new_opening_end[0]
-    " The closing tag is on the same line as the end of the opening one, it
-    " might have changed columns
-    let closing_position[2] += a:new_opening_end[1] - a:change.opening_end_col
-  endif
-
-  return closing_position
 endfunction
