@@ -128,38 +128,17 @@ function! tagalong#Apply()
   call tagalong#util#PushCursor()
 
   try
-    let change = s:FillChangeContents(change)
+    let change = s:UpdateChangeBeforeApplying(change)
     if change == {}
       return
     endif
 
-    " Reposition in case lines have moved around under us:
-    if change.source == 'opening' && change.opening_end_line > 0
-      let current_opening_start = tagalong#util#SearchposUnderCursor(s:opening_regex.s:opening_end_regex, 'nc')
-      let current_opening_end   = tagalong#util#SearchposUnderCursor(s:opening_regex.s:opening_end_regex, 'nce')
-
-      let current_opening_position = s:UpdateOpeningPosition(change, current_opening_start)
-      let current_closing_position = s:UpdateClosingPosition(change, current_opening_end)
-    elseif change.source == 'closing'
-      let current_opening_position = copy(change.opening_position)
-      let current_closing_position = copy(change.closing_position)
-
-      let current_closing_start = tagalong#util#SearchposUnderCursor(s:closing_regex, 'nc')
-
-      let current_opening_position[1] += current_closing_start[0] - current_closing_position[1]
-      let current_closing_position[1] = current_closing_start[0]
-      let current_closing_position[2] = current_closing_start[1]
-    else
-      let current_opening_position = change.opening_position
-      let current_closing_position = change.closing_position
-    endif
-
     " Update the closing tag
-    call setpos('.', current_closing_position)
+    call setpos('.', change.closing_position)
     call tagalong#util#ReplaceMotion('va>', change.new_closing)
 
     " Then the opening tag:
-    call setpos('.', current_opening_position)
+    call setpos('.', change.opening_position)
     call tagalong#util#ReplaceMotion('va>', change.new_opening)
 
     silent! call repeat#set("\<Plug>TagalongReapply")
@@ -357,7 +336,7 @@ function! s:GetChangePositions()
   endtry
 endfunction
 
-function! s:FillChangeContents(change)
+function! s:UpdateChangeBeforeApplying(change)
   let change = a:change
 
   call tagalong#util#PushCursor()
@@ -402,6 +381,31 @@ function! s:FillChangeContents(change)
   let change.new_closing = new_closing
 
   call tagalong#util#PopCursor()
+
+  " Reposition in case lines have moved around under us:
+  if change.source == 'opening' && change.opening_end_line > 0
+    let current_opening_start = tagalong#util#SearchposUnderCursor(s:opening_regex.s:opening_end_regex, 'nc')
+    let current_opening_end   = tagalong#util#SearchposUnderCursor(s:opening_regex.s:opening_end_regex, 'nce')
+
+    let current_opening_position = s:UpdateOpeningPosition(change, current_opening_start)
+    let current_closing_position = s:UpdateClosingPosition(change, current_opening_end)
+  elseif change.source == 'closing'
+    let current_opening_position = copy(change.opening_position)
+    let current_closing_position = copy(change.closing_position)
+
+    let current_closing_start = tagalong#util#SearchposUnderCursor(s:closing_regex, 'nc')
+
+    let current_opening_position[1] += current_closing_start[0] - current_closing_position[1]
+    let current_closing_position[1] = current_closing_start[0]
+    let current_closing_position[2] = current_closing_start[1]
+  else
+    let current_opening_position = change.opening_position
+    let current_closing_position = change.closing_position
+  endif
+
+  let change.opening_position = current_opening_position
+  let change.closing_position = current_closing_position
+
   return change
 endfunction
 
