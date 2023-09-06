@@ -424,7 +424,7 @@ function! s:JumpPair(direction, tag)
     return 0
   endif
 
-  let start_pattern = '<\zs\V'   . a:tag . '\m' . s:opening_end_regex
+  let start_pattern = '<\zs\V'   . a:tag . '\m\>' . s:opening_end_regex
   let end_pattern   = '<\/\zs\V' . a:tag . '\m>'
 
   return searchpair(start_pattern, '', end_pattern, flags, '', 0, g:tagalong_timeout)

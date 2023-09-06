@@ -57,4 +57,21 @@ RSpec.describe "JSX" do
       </Example>
     HTML
   end
+
+  specify "Handling nested components with similar names" do
+    set_file_contents <<~HTML
+      <Example>
+        <ExampleItem />
+      </Example>
+    HTML
+
+    vim.search('<\zsExample>')
+    edit('cwChanged')
+
+    assert_file_contents <<~HTML
+      <Changed>
+        <ExampleItem />
+      </Changed>
+    HTML
+  end
 end
