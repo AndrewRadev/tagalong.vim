@@ -4,8 +4,11 @@ let s:closing_regex = '<\/\zs\k[^>[:space:]]*\ze>'
 let s:jsx_fragment_opening_regex = '<\zs>'
 let s:jsx_fragment_closing_regex = '</\zs>'
 
-" Either the closing > of an opening tag, or the end of a line
-let s:opening_end_regex = '\%(\%(\_[^>]\{-}\_[^\/]\=>\)\)'
+" Either:
+" - immediate closing > of an opening tag
+" - some non-/ characters followed by a >, or
+" - the end of a line
+let s:opening_end_regex = '\%(>\|\%(\_[^>]\{-}\_[^\/]>\)\|$\)'
 
 function! tagalong#Init()
   if exists('b:tagalong_initialized')

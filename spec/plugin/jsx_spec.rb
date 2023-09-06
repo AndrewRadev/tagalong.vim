@@ -74,4 +74,21 @@ RSpec.describe "JSX" do
       </Changed>
     HTML
   end
+
+  specify "Handling nested self-closing components with same name" do
+    set_file_contents <<~HTML
+      <Example>
+        <Example />
+      </Example>
+    HTML
+
+    vim.search('<\zsExample>')
+    edit('cwChanged')
+
+    assert_file_contents <<~HTML
+      <Changed>
+        <Example />
+      </Changed>
+    HTML
+  end
 end
