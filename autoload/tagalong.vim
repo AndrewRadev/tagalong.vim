@@ -228,6 +228,11 @@ endfunction
 function! s:GetChangePositions()
   call tagalong#util#PushCursor()
 
+  let syntax_at_cursor = synIDattr(synID(line('.'),col('.'),1),'name')
+  if syntax_at_cursor == 'htmlString'
+    return {}
+  endif
+
   try
     if tagalong#util#SearchUnderCursor(s:opening_regex.s:opening_end_regex)
       " We are on an opening tag
