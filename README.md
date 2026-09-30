@@ -172,4 +172,4 @@ Thanks to [@BeatRichardz](https://twitter.com/BeatRichartz/status/11176218600557
 
 ## Contributing
 
-Pull requests are welcome, as long as they did not involve LLM usage. Take a look at [CONTRIBUTING.md](./CONTRIBUTING.md) first for some guidelines. Be sure to abide by the [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) as well.
+Pull requests are welcome, as long as they **did not involve LLM usage**. Take a look at [CONTRIBUTING.md](./CONTRIBUTING.md) first for some guidelines. Be sure to abide by the [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) as well.

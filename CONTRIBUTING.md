@@ -7,7 +7,7 @@ If you'd like to contribute to the project, you can use the usual github pull-re
 3. Test the new behaviour and make sure all existing tests pass (optional, see below for more information).
 4. Issue a pull request with a description of your feature/bugfix.
 
-Please do not use any LLMs while writing the code. If I am able to recognize LLM usage, the PR will be rejected on principle.
+**Please do not use any LLMs while writing the code. If I am able to recognize LLM usage, the PR will be rejected on principle.**
 
 ## Testing
 
